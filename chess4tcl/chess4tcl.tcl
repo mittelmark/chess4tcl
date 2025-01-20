@@ -1,7 +1,7 @@
 #!/usr/bin/env tclsh
 ##############################################################################
 #  Created       : 2025-01-15 19:21:27
-#  Last Modified : <250120.1147>
+#  Last Modified : <250120.1813>
 #
 #  Description	 : Tcl class using chess.js via Duktape
 #
@@ -117,7 +117,6 @@ oo::class create ::chess4tcl::Chess4Tcl {
     variable dto
     constructor {{fen ""}} {
         set dto [::duktape::oo::Duktape new]
-
         # code fom dbohdan
         if {![file exists $::chess4tcl::chessfile]} {
             #rputs "fetching https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/$chessfile"
@@ -254,20 +253,7 @@ oo::class create ::chess4tcl::Chess4Tcl {
     method fen { } {
         return [$dto call-method-str chess.fen undefined]
     }
-    #' _cmd_ __load__ _?FEN?_
-    #' 
-    #' > Load the given fenstring.
-    #'
-    #' > Example:
-    #'
-    #' ```{.tcl}
-    #' $chess load "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3"
-    #' puts [$chess fen]
-    #' ```
-    #'
-    method load {fen} {
-        $dto eval "chess.load(\"$fen\")"
-    }
+    
     #' _cmd_ **game_over**
     #' 
     #' > Checks if the game is finished.
@@ -283,6 +269,45 @@ oo::class create ::chess4tcl::Chess4Tcl {
     method game_over {} {
         return [$dto call-method-str chess.game_over undefined]
     }
+    
+    #' _cmd_ **gboard**
+    #' 
+    #' > Displays the current board using the javascript web component gchessboard.
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl results=asis}
+    #' puts [$chess gboard]
+    #' ```
+    #'
+    method gboard {} {
+        variable gboard
+        set res ""
+        set fen [regsub { .+} [my fen] ""]
+        set style "--square-color-dark: hsl(27deg, 36%, 55%);--square-color-light: hsl(37deg, 66%, 83%);"
+        if {![info exists gboard]} {
+            append res {<script type="module" src="https://unpkg.com/gchessboard"></script>}
+            set gboard true
+        }
+        append res {<div style="max-width: 400px;margin-left:35px;"><g-chess-board fen="FEN" style="STYLE"></g-chess-board></div>}
+        set res [regsub FEN $res $fen]
+        set res [regsub STYLE $res $style]
+        return $res
+    }
+    
+    #' _cmd_ **get** *square*
+    #' 
+    #' > Returns the stone on the given square.
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl}
+    #' $chess load "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3"
+    #' $chess board
+    #' puts [$chess get e1]
+    #' ```
+    #'
+
     method get {square} {
         if {[$dto eval "chess.get(\"$square\")"] eq "null"} {
             return [list "" ""]
@@ -291,15 +316,46 @@ oo::class create ::chess4tcl::Chess4Tcl {
                     [$dto eval "chess.get(\"$square\").color"]]
         }
     }
-   method header {args} {
-       foreach {key value} $args {
-           $dto eval "chess.header(\"$key\",\"$value\")"
-       }
-       if {[llength $args] == 0} {
-           return [$dto eval "Object.keys(chess.header())"]
-       }
-   }
-   method history {{verbose false}} {
+    #' _cmd_ **header** *?args?*
+    #' 
+    #' > Returns the the available header keys or returns the given header value
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl}
+    #' puts [$chess header]
+    #' $chess header White "James White"
+    #' $chess header Black "Jonny Black"
+    #' puts [$chess header]
+    #' ```
+    #'
+    method header {args} {
+        foreach {key value} $args {
+            $dto eval "chess.header(\"$key\",\"$value\")"
+        }
+        if {[llength $args] == 0} {
+            return [$dto eval "Object.keys(chess.header())"]
+        }
+    }
+    #' _cmd_ **history** *?verbose?*
+    #' 
+    #' > Returns the last moves of a game.
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl}
+    #' $chess new
+    #' $chess move e4
+    #' $chess move e5
+    #' $chess move f4
+    #' puts [$chess history]
+    #' ```
+    #'
+    #' ```{.tcl}
+    #' puts [$chess history true]    
+    #' ```
+    #'
+    method history {{verbose false}} {
         if {$verbose} {
             set nmove [llength [[self] history]]
             set res [list]
@@ -317,58 +373,20 @@ oo::class create ::chess4tcl::Chess4Tcl {
            return [split [$dto eval { chess.history() }] ,]
        }
    }
-   #' ```{.tcl results=asis}
-   #' puts [$chess svg]
-   #' ```
-   #'
-   method svg {{size 400}} {
-       set fontfile $::chess4tcl::fontfile
-       if [catch {open $fontfile r} infh] {
-           puts stderr "Cannot open $fontfile: $infh"
-           exit
-       } else {
-           set b64 [read $infh]
-           set b64 [regsub -all {[\n ]} $b64 ""]
-           close $infh
-       }
-       set board [my board]
-       set pieces {
-           K \u2654 Q \u2655 R \u2656 B \u2657 N \u2658 P \u2659
-           k \u265A q \u265B r \u265C b \u265D n \u265E p \u265F
-       }
-       set font "@font-face { 
-          font-family: 'Merida'; 
-          src: url(data:font/truetype;charset=utf-8;base64,$b64) format('truetype'); 
-      }"
-      set shadow "text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;"
-      #set font ""
-       set svg "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 8 8\" width=\"$size\" height=\"$size\" style=\"border: 3px solid #631;\">"
-       append svg "<style>$font\ntext.white { $shadow; }\ntext{ font-family: Merida; font-size:0.8px;text-anchor:middle;dominant-baseline:central; border: 2px solid #630; }</style>"
-       set board [split $board "\n"]
-       set row 0
-       foreach rank $board {
-           set col 0
-           foreach char [split $rank ""] {
-               set x [expr {$col + 0.5}]
-               set y [expr {$row + 0.3}]
-               set fill [expr {($row + $col) % 2 == 0 ? "#fdc" : "#cba"}]
-               append svg "<rect x=\"$col\" y=\"$row\" width=\"1\" height=\"1\" fill=\"$fill\"/>"
-               if {[string is lower $char]} {
-                   set piece [string map $pieces $char]
-                   append svg "<text x=\"$x\" y=\"$y\">$piece</text>"
-               } elseif {[string is upper $char]} {
-                   set piece [string map $pieces $char]
-                   append svg "<text x=\"$x\" y=\"$y\" class=\"white\">$piece</text>"                   
-               } 
-               incr col
-           }
-           incr row
-       }
-       
-       append svg "</svg>"
-       return $svg
-   }
-
+    #' _cmd_ __load__ _?FEN?_
+    #' 
+    #' > Load the given fenstring.
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl}
+    #' $chess load "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3"
+    #' puts [$chess fen]
+    #' ```
+    #'
+    method load {fen} {
+        $dto eval "chess.load(\"$fen\")"
+    }
     #' _cmd_ __moves__ 
     #' 
     #' > Returns all possible moves.
@@ -408,60 +426,205 @@ oo::class create ::chess4tcl::Chess4Tcl {
             $dto moveFromTo $from $to
         }
     }
-
-   method in_check {} {
-       return [$dto call-method-str chess.in_check undefined]
-   }
-   method in_checkmate {} {
-       return [$dto call-method-str chess.in_checkmate undefined]
-       
-   }
-   method in_draw {} {
-       return [$dto call-method-str chess.in_draw undefined]
-   }
-   method in_stalemate {} {
-       return [$dto call-method-str chess.in_stalemate undefined]
-   }
-   method in_threefold_repetition {} {
-       return [$dto call-method-str chess.in_threefold_repetition undefined]
-   }
-   method insufficient_material {} {
-       return [$dto call-method-str chess.insufficient_material undefined]
-   }
-   method new { } {
-       $dto eval "chess =new Chess ()"
+    #' _cmd_ **in_check**
+    #' 
+    #' > Returns if King is in check.
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl}
+    #' $chess new
+    #' $chess move e4
+    #' $chess move e5
+    #' $chess move f4
+    #' puts [$chess in_check]
+    #' $chess move Qh4
+    #' puts [$chess in_check]
+    #' ```
+    #' 
+    #' ```{.tcl results="asis"}
+    #' puts [$chess gboard]
+    #' ```
+    #'
+    method in_check {} {
+        return [$dto call-method-str chess.in_check undefined]
+    }
+    #' _cmd_ **in_checkmate**
+    #' 
+    #' > Returns if King is checkmate.
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl}
+    #' $chess new
+    #' $chess move e4
+    #' $chess move e5
+    #' $chess move Ke2
+    #' $chess move Qh4
+    #' $chess move Na3
+    #' puts [$chess in_checkmate]
+    #' $chess move Qxe4
+    #' puts [$chess in_checkmate]
+    #' ```
+    #'
+    method in_checkmate {} {
+        return [$dto call-method-str chess.in_checkmate undefined]
+        
+    }
+    #' _cmd_ **in_draw**
+    #' 
+    #' > Returns if teh game is a technical draw.
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl}
+    #' $chess load "1k6/1N6/1K6/8/8/8/8/8 w - - 0 1" ; # just a knight
+    #' puts [$chess ascii]
+    #' puts "draw: [$chess in_draw]"
+    #' $chess load "1k6/1N6/1K6/8/8/8/8/7B w - - 0 1" ; # adding a bishop
+    #' puts [$chess ascii]
+    #' puts "draw: [$chess in_draw]"
+    #' ```
+    #'
+    method in_draw {} {
+        return [$dto call-method-str chess.in_draw undefined]
+    }
+    #' _cmd_ **in_stalemate**
+    #' 
+    #' > Returns if teh game is a technical draw.
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl}
+    #' $chess load "1k6/1N6/1K6/8/8/8/8/8 b - - 0 1" ; # just a knight
+    #' puts [$chess ascii]
+    #' puts "stalemate: [$chess in_stalemate]"
+    #' $chess load "1k6/1P6/1K6/8/8/8/8/8 b - - 0 1" ; # adding a pawn
+    #' puts [$chess ascii]
+    #' puts "stalemate: [$chess in_stalemate]"
+    #' ```
+    #'
+    method in_stalemate {} {
+        return [$dto call-method-str chess.in_stalemate undefined]
+    }
+    #' _cmd_ **in\_threefold\_repetition**
+    #' 
+    #' > Returns if the game is in threfold repetition.
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl}
+    #' $chess new
+    #' $chess move e4
+    #' $chess move e5
+    #' $chess move Ke2
+    #' $chess move Ke7
+    #' puts [$chess ascii]
+    #' puts "repetition: [$chess in_threefold_repetition]"
+    #' $chess move Ke1
+    #' $chess move Ke8
+    #' $chess move Ke2
+    #' $chess move Ke7
+    #' $chess move Ke1
+    #' $chess move Ke8
+    #' $chess move Ke2
+    #' $chess move Ke7
+    #' $chess move Ke1
+    #' $chess move Ke8
+    #' puts "repetition: [$chess in_threefold_repetition]"
+    #' ```
+    #'
+    method in_threefold_repetition {} {
+        return [$dto call-method-str chess.in_threefold_repetition undefined]
+    }
+    method insufficient_material {} {
+        return [$dto call-method-str chess.insufficient_material undefined]
+    }
+    method new { } {
+        $dto eval "chess =new Chess ()"
     }
     method load_pgn2 {pgn} {
         # did not work
-       set pgn [regsub -all {\n +\n} $pgn {\n\n}]
-       set results [$dto call-str chess.load_pgn $pgn]
-       puts "results=$results"
-       return 
-   }
-   method load_pgn {pgn} {
-       return [$dto loadPgn2 $pgn]
-   }
-
-   method pgn {} {
-       return [$dto call-method-str chess.pgn undefined]
-   }
-   method put {piece color square} {
-       return [$dto eval "chess.put({type: '$piece',color: '$color'},'$square')"]
-   }
-   method reset {} {
-       return [$dto call-method-str chess.reset undefined]
-   }
-   method remove {square} {
-       set res [list]
-       puts [$dto eval "chess.remove(\"$square\")"]
-       if {[$dto eval "chess.remove(\"$square\")"] eq "null"} {
-           return $res
-       }
-       foreach key [$dto eval "Object.keys(chess.remove(\"$square\"))"] {
-           lappend res [list $key [$dto eval "chess.remove(\"$square\").$key"]]
-       }
-       return $res
-   }
+        set pgn [regsub -all {\n +\n} $pgn {\n\n}]
+        set results [$dto call-str chess.load_pgn $pgn]
+        puts "results=$results"
+        return 
+    }
+    method load_pgn {pgn} {
+        return [$dto loadPgn2 $pgn]
+    }
+    
+    method pgn {} {
+        return [$dto call-method-str chess.pgn undefined]
+    }
+    method put {piece color square} {
+        return [$dto eval "chess.put({type: '$piece',color: '$color'},'$square')"]
+    }
+    method reset {} {
+        return [$dto call-method-str chess.reset undefined]
+    }
+    method remove {square} {
+        set res [list]
+        puts [$dto eval "chess.remove(\"$square\")"]
+        if {[$dto eval "chess.remove(\"$square\")"] eq "null"} {
+            return $res
+        }
+        foreach key [$dto eval "Object.keys(chess.remove(\"$square\"))"] {
+            lappend res [list $key [$dto eval "chess.remove(\"$square\").$key"]]
+        }
+        return $res
+    }
+    #' ```{.tcl results=asis}
+    #' puts [$chess svg]
+    #' ```
+    #'
+    method svg {{size 400}} {
+        set fontfile $::chess4tcl::fontfile
+        if [catch {open $fontfile r} infh] {
+            puts stderr "Cannot open $fontfile: $infh"
+            exit
+        } else {
+            set b64 [read $infh]
+            set b64 [regsub -all {[\n ]} $b64 ""]
+            close $infh
+        }
+        set board [my board]
+        set pieces {
+            K \u2654 Q \u2655 R \u2656 B \u2657 N \u2658 P \u2659
+            k \u265A q \u265B r \u265C b \u265D n \u265E p \u265F
+        }
+        set font "@font-face { 
+        font-family: 'Merida'; 
+        src: url(data:font/truetype;charset=utf-8;base64,$b64) format('truetype'); 
+        }"
+        set shadow "text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;"
+        #set font ""
+        set svg "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 8 8\" width=\"$size\" height=\"$size\" style=\"border: 3px solid #631;\">"
+        append svg "<style>$font\ntext.white { $shadow; }\ntext{ font-family: Merida; font-size:0.8px;text-anchor:middle;dominant-baseline:central; border: 2px solid #630; }</style>"
+        set board [split $board "\n"]
+        set row 0
+        foreach rank $board {
+            set col 0
+            foreach char [split $rank ""] {
+                set x [expr {$col + 0.5}]
+                set y [expr {$row + 0.3}]
+                set fill [expr {($row + $col) % 2 == 0 ? "#fdc" : "#cba"}]
+                append svg "<rect x=\"$col\" y=\"$row\" width=\"1\" height=\"1\" fill=\"$fill\"/>"
+                if {[string is lower $char]} {
+                    set piece [string map $pieces $char]
+                    append svg "<text x=\"$x\" y=\"$y\">$piece</text>"
+                } elseif {[string is upper $char]} {
+                    set piece [string map $pieces $char]
+                    append svg "<text x=\"$x\" y=\"$y\" class=\"white\">$piece</text>"                   
+                } 
+                incr col
+            }
+            incr row
+        }
+        
+        append svg "</svg>"
+        return $svg
+    }
    method turn {} {
        $dto call-method-str chess.turn undefined
    }
