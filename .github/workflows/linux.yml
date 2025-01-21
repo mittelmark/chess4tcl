@@ -9,7 +9,8 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v1
     - name: Install Tcl
-      run: sudo apt install tcl-dev
+      run: |
+        sudo apt install tcl-dev
     - name: Build and test
       run: |
         git clone https://github.com/dbohdan/tcl-duktape.git
