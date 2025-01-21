@@ -25,6 +25,8 @@ jobs:
       run: |
         brew install tcl-tk@8
         which tclsh
+        which tclsh8.6
+        find /usr/local -name "tclsh*"
         echo -E "puts $::tcl_patchLevel" | tclsh
         git clone https://github.com/dbohdan/tcl-duktape.git
         cd tcl-duktape
