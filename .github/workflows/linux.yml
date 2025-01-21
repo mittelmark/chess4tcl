@@ -16,6 +16,19 @@ jobs:
         cd tcl-duktape
         ./configure && make test
         ls -l
+        mkdir duktape
+        mv lib/*.tcl duktape/
+        mv pkgIndex.tcl duktape/
+        mv *dylib duktape/
+        mv LICENSE duktape/
+        ls -lh duktape/*
+        export TCLLIBPATH=`pwd`
+        echo -E "lappend auto_path . ; puts [package require duktape]\n" | tclsh
+    - name: Upload Linux Intel Package
+      uses: actions/upload-artifact@v4
+      with: 
+        name: duktape-linux-intel
+        path: duktape
   macos-build:
     runs-on: macos-13
     steps:
@@ -40,3 +53,9 @@ jobs:
         ls -lh duktape/*
         export TCLLIBPATH=`pwd`
         echo -E "lappend auto_path . ; puts [package require duktape]\n" | tclsh
+    - name: Upload MacOS Intel Package
+      uses: actions/upload-artifact@v4
+      with: 
+        name: duktape-macos-intel
+        path: duktape
+
