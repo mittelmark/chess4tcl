@@ -19,7 +19,7 @@ jobs:
         mkdir duktape
         mv lib/*.tcl duktape/
         mv pkgIndex.tcl duktape/
-        mv *dylib duktape/
+        mv *sp duktape/
         mv LICENSE duktape/
         ls -lh duktape/*
         export TCLLIBPATH=`pwd`
