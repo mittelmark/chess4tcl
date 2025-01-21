@@ -91,14 +91,19 @@ jobs:
     steps:
     - name: first
       uses: msys2/setup-msys2@v2
+      with:
+          update: true
+          install: >-
+            curl
+            git 
     - name: test
       shell: msys2 {0}
       run: |
         uname -a
-        yes | pacman -S git 2> /dev/null
-        yes | pacman -S mingw-w64-x86_64-tcl 2> /dev/null
-        yes | pacman -S make 2> /dev/null
-        yes | pacman -S mingw-w64-ucrt-x86_64-gcc 2>/dev/null
+        #yes | pacman -S git 2> /dev/null
+        #yes | pacman -S mingw-w64-x86_64-tcl 2> /dev/null
+        #yes | pacman -S make 2> /dev/null
+        #yes | pacman -S mingw-w64-ucrt-x86_64-gcc 2>/dev/null
         echo here
         which git
         echo git
