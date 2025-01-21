@@ -33,3 +33,8 @@ jobs:
         echo -E "puts $::tcl_patchLevel" | tclsh
         ./configure --with-tcl=/usr/local/Cellar/tcl-tk@8/8.6.16/lib && make
         ls -l
+        cat pkgIndex.tcl
+        cp pkgIndex.tcl lib/
+        cp *dylib lib/
+        echo -E "package require duktape\n" | TCLLIBPATH=. tclsh
+        tclsh tests.tcl
