@@ -32,7 +32,6 @@ jobs:
         echo -E "puts $::tcl_patchLevel" | tclsh
         ./configure --with-tcl=/usr/local/Cellar/tcl-tk@8/8.6.16/lib && make
         ls -l
-        cat pkgIndex.tcl
         mkdir duktape
         cp lib/*.tcl duktape/
         cp pkgIndex.tcl duktape/
@@ -41,4 +40,3 @@ jobs:
         ls -lh duktape/*
         export TCLLIBPATH=`pwd`
         echo -E "lappend auto_path . ; puts [package require duktape]\n" | tclsh
-        #tclsh tests.tcl
