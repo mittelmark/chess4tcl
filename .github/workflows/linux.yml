@@ -34,7 +34,10 @@ jobs:
         ./configure --with-tcl=/usr/local/Cellar/tcl-tk@8/8.6.16/lib && make
         ls -l
         cat pkgIndex.tcl
-        cp pkgIndex.tcl lib/
-        cp *dylib lib/
-        echo -E "package require duktape\n" | TCLLIBPATH=. tclsh
+        mkdir duktape
+        cp lib/*.tcl duktape/
+        cp pkgIndex.tcl duktape/
+        cp *dylib duktape/
+        ls -lh duktape/*
+        echo -E "package require duktape\n" | TCLLIBPATH=`pwd` tclsh
         tclsh tests.tcl
