@@ -32,7 +32,9 @@ jobs:
         git clone https://github.com/dbohdan/tcl-duktape.git
         cd tcl-duktape
         ls /System/Library/Frameworks/Tcl.framework/Versions/8.5/
-        ./configure --with-tcl=/System/Library/Frameworks/Tcl.framework/Versions/8.5 && make test
+        export PATH=/usr/local/Cellar/tcl-tk@8/8.6.16/bin/:$PATH
+        echo -E "puts $::tcl_patchLevel" | tclsh
+        ./configure --with-tcl=/usr/local/Cellar/tcl-tk@8/8.6.16 && make test
         ls -l
         ls /System/Library/Frameworks/Tcl.framework/Versions/Current
         find /System/Library/Frameworks/Tcl.framework/Versions -name "tclConfig.sh"
