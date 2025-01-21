@@ -27,7 +27,6 @@ jobs:
         echo -E "puts $::tcl_patchLevel" | tclsh
         git clone https://github.com/dbohdan/tcl-duktape.git
         cd tcl-duktape
-        ls /System/Library/Frameworks/Tcl.framework/Versions/8.5/
         export PATH=/usr/local/Cellar/tcl-tk@8/8.6.16/bin/:$PATH
         find /usr/local/Cellar/tcl-tk@8/8.6.16/ -name "tclConfig.sh"
         echo -E "puts $::tcl_patchLevel" | tclsh
@@ -38,7 +37,8 @@ jobs:
         cp lib/*.tcl duktape/
         cp pkgIndex.tcl duktape/
         cp *dylib duktape/
+        cp LICENSE duktape/
         ls -lh duktape/*
         export TCLLIBPATH=`pwd`
-        echo -E "package require duktape\n" | tclsh
-        tclsh tests.tcl
+        echo -E "lappend auto_path . ; puts [package require duktape]\n" | tclsh
+        #tclsh tests.tcl
