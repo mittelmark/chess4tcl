@@ -1,0 +1,31 @@
+name: Release Linux
+on: 
+  workflow_dispatch:
+    branches: [ master ]
+jobs:
+  test-autoconf:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Install Tcl
+      run: sudo apt install tcl-dev
+    - name: Build and test
+      run: |
+        git clone https://github.com/dbohdan/tcl-duktape.git
+        cd tcl-duktape
+       ./autogen.sh && ./configure && make test
+       ls -l
+  test-committed-configure:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Install Tcl
+      run: sudo apt install tcl-dev
+    - name: Build and test
+      run: |
+        git clone https://github.com/dbohdan/tcl-duktape.git
+        cd tcl-duktape
+        ./configure && make test
+        ls -l
