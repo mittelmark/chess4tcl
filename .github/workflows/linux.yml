@@ -26,8 +26,10 @@ jobs:
         brew install tcl-tk@8
         echo -E "puts $::tcl_patchLevel" | tclsh
         ls /usr/local
+        ls /usr/local/bin        
         git clone https://github.com/dbohdan/tcl-duktape.git
         cd tcl-duktape
+        ls /System/Library/Frameworks/Tcl.framework/Versions/8.5/
         ./configure --with-tcl=/System/Library/Frameworks/Tcl.framework/Versions/8.5 && make test
         ls -l
         ls /System/Library/Frameworks/Tcl.framework/Versions/Current
