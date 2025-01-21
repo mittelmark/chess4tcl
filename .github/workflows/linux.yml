@@ -31,15 +31,15 @@ jobs:
   windows:
     runs-on: windows-2022
     defaults:
-      run:
+      run: |
         shell: msys2 {0}
-    - name: Install MSYS2
+      name: Install MSYS2
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
           install: git mingw-w64-x86_64-toolchain make
-    - name: build-it
-      run:
+      name: build-it
+      run: |
         git clone https://github.com/dbohdan/tcl-duktape.git
         cd tcl-duktape
         ls
