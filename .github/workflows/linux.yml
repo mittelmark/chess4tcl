@@ -7,7 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v1
+      uses: actions/checkout@v4
+    - name: Install Tcl
+      run: |
+        sudo apt install tcl-dev
     - name: Build and test
       run: |
         git clone https://github.com/dbohdan/tcl-duktape.git
@@ -18,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v1
+      uses: actions/checkout@v4
     - name: Install Tcl
       run: sudo apt install tcl-dev
     - name: Build and test
