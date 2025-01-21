@@ -33,10 +33,10 @@ jobs:
         ./configure --with-tcl=/usr/local/Cellar/tcl-tk@8/8.6.16/lib && make
         ls -l
         mkdir duktape
-        cp lib/*.tcl duktape/
-        cp pkgIndex.tcl duktape/
-        cp *dylib duktape/
-        cp LICENSE duktape/
+        mv lib/*.tcl duktape/
+        mv pkgIndex.tcl duktape/
+        mv *dylib duktape/
+        mv LICENSE duktape/
         ls -lh duktape/*
         export TCLLIBPATH=`pwd`
         echo -E "lappend auto_path . ; puts [package require duktape]\n" | tclsh
