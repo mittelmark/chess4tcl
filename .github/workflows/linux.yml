@@ -35,7 +35,7 @@ jobs:
         export PATH=/usr/local/Cellar/tcl-tk@8/8.6.16/bin/:$PATH
         find /usr/local/Cellar/tcl-tk@8/8.6.16/ -name "tclConfig.sh"
         echo -E "puts $::tcl_patchLevel" | tclsh
-        ./configure --with-tcl=/usr/local/Cellar/tcl-tk@8/8.6.16 && make test
+        ./configure --with-tcl=/usr/local/Cellar/tcl-tk@8/8.6.16/lib && make test
         ls -l
         ls /System/Library/Frameworks/Tcl.framework/Versions/Current
         find /System/Library/Frameworks/Tcl.framework/Versions -name "tclConfig.sh"
