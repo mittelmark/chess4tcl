@@ -28,3 +28,4 @@ jobs:
         cd tcl-duktape
         ./configure && make test
         ls -l
+        find /System/Library/Frameworks/Tcl.framework/Versions -name "tclConfig.sh"
