@@ -1,4 +1,4 @@
-name: Release Linux/MacOS
+name: Release Linux/MacOS/Windows
 on: 
   workflow_dispatch:
     branches: [ master ]
@@ -113,14 +113,21 @@ jobs:
         uname -m
         uname -o
         uname -a
-        #yes | pacman -S git 2> /dev/null
-        #yes | pacman -S mingw-w64-x86_64-tcl 2> /dev/null
-        #yes | pacman -S make 2> /dev/null
-        #yes | pacman -S mingw-w64-ucrt-x86_64-gcc 2>/dev/null
-        echo here
-        which git
-        echo git
         git clone https://github.com/dbohdan/tcl-duktape.git
         cd tcl-duktape
         ./configure
         make
+        ls -l
+        mkdir duktape
+        mv lib/*.tcl duktape/
+        mv pkgIndex.tcl duktape/
+        mv *dll duktape/
+        mv LICENSE duktape/
+        ls -lh duktape/*
+        export TCLLIBPATH=`pwd`
+        echo -E "lappend auto_path . ; puts [package require duktape]\n" | tclsh
+    - name: Upload Windows Msys build Package
+      uses: actions/upload-artifact@v4
+      with: 
+        name: duktape-windows
+        path: tcl-duktape/duktape
