@@ -19,7 +19,7 @@ jobs:
         mkdir duktape
         mv lib/*.tcl duktape/
         mv pkgIndex.tcl duktape/
-        mv *sp duktape/
+        mv *so duktape/
         mv LICENSE duktape/
         ls -lh duktape/*
         export TCLLIBPATH=`pwd`
@@ -29,7 +29,7 @@ jobs:
       with: 
         name: duktape-linux-intel
         path: tcl-duktape/duktape
-  macos-build:
+  macos-intel-build:
     runs-on: macos-13
     steps:
     - name: Checkout
@@ -57,5 +57,34 @@ jobs:
       uses: actions/upload-artifact@v4
       with: 
         name: duktape-macos-intel
+        path: tcl-duktape/duktape
+  macos-apple-build:
+    runs-on: macos-14
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Build and test
+      run: |
+        brew install tcl-tk@8
+        echo -E "puts $::tcl_patchLevel" | tclsh
+        git clone https://github.com/dbohdan/tcl-duktape.git
+        cd tcl-duktape
+        export PATH=/usr/local/Cellar/tcl-tk@8/8.6.16/bin/:$PATH
+        find /usr/local/Cellar/tcl-tk@8/8.6.16/ -name "tclConfig.sh"
+        echo -E "puts $::tcl_patchLevel" | tclsh
+        ./configure --with-tcl=/usr/local/Cellar/tcl-tk@8/8.6.16/lib && make
+        ls -l
+        mkdir duktape
+        mv lib/*.tcl duktape/
+        mv pkgIndex.tcl duktape/
+        mv *dylib duktape/
+        mv LICENSE duktape/
+        ls -lh duktape/*
+        export TCLLIBPATH=`pwd`
+        echo -E "lappend auto_path . ; puts [package require duktape]\n" | tclsh
+    - name: Upload MacOS Apple Package
+      uses: actions/upload-artifact@v4
+      with: 
+        name: duktape-macos-apple
         path: tcl-duktape/duktape
 
