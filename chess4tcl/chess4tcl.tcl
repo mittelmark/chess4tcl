@@ -1,7 +1,7 @@
 #!/usr/bin/env tclsh
 ##############################################################################
 #  Created       : 2025-01-15 19:21:27
-#  Last Modified : <250120.1813>
+#  Last Modified : <250121.0914>
 #
 #  Description	 : Tcl class using chess.js via Duktape
 #
@@ -316,6 +316,24 @@ oo::class create ::chess4tcl::Chess4Tcl {
                     [$dto eval "chess.get(\"$square\").color"]]
         }
     }
+    #' _cmd_ __goto\_half\_move__ _N_
+    #' 
+    #' > Load the current game and goto the given half move, so move 5 with white to move is half move 9.
+    #'   Please note that this creates a new game, so the play through a game and display certain positions you have
+    #'   to store the current PGN
+    #' 
+    #' > Returns: true if loaded, false otherwise
+    #'
+    #' > Example: See [load_pgn](#loadpgn) for an example.
+    #'
+    
+    method goto_half_move {hm} {
+        set moves [my history]
+        my new
+        for {set i 0} {$i < $hm} {incr i 1} {
+            my move [lindex $moves $i]
+        }
+    }
     #' _cmd_ **header** *?args?*
     #' 
     #' > Returns the the available header keys or returns the given header value
@@ -369,61 +387,8 @@ oo::class create ::chess4tcl::Chess4Tcl {
                 lappend res $move
             }
             return $res
-       } else {
-           return [split [$dto eval { chess.history() }] ,]
-       }
-   }
-    #' _cmd_ __load__ _?FEN?_
-    #' 
-    #' > Load the given fenstring.
-    #'
-    #' > Example:
-    #'
-    #' ```{.tcl}
-    #' $chess load "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3"
-    #' puts [$chess fen]
-    #' ```
-    #'
-    method load {fen} {
-        $dto eval "chess.load(\"$fen\")"
-    }
-    #' _cmd_ __moves__ 
-    #' 
-    #' > Returns all possible moves.
-    #'
-    #' > Example:
-    #'
-    #' ```{.tcl}
-    #' $chess new
-    #' puts [$chess fen]
-    #' puts [$chess moves]
-    #' ```
-    #'
-    method moves { } {
-        return [split [$dto eval { moves = chess.moves() }] ,]
-    }
-    #' _cmd_ __move__ _?MOVE?_
-    #' 
-    #' > Executes the given move
-    #'
-    #' > Example:
-    #'
-    #' ```{.tcl}
-    #' $chess new
-    #' $chess move e4
-    #' $chess move e5
-    #' $chess move Ke2
-    #' puts [$chess board]
-    #' ```
-    #'
-    method move {args} {
-        if {[llength $args]== 1} {
-            set move [lindex $args 0]
-            $dto eval " chess.move(\"$move\") "
         } else {
-            set from [lindex $args 0]
-            set to [lindex $args 1]
-            $dto moveFromTo $from $to
+            return [split [$dto eval { chess.history() }] ,]
         }
     }
     #' _cmd_ **in_check**
@@ -507,9 +472,9 @@ oo::class create ::chess4tcl::Chess4Tcl {
     method in_stalemate {} {
         return [$dto call-method-str chess.in_stalemate undefined]
     }
-    #' _cmd_ **in\_threefold\_repetition**
+    #' _cmd_ __in\_threefold\_repetition__
     #' 
-    #' > Returns if the game is in threfold repetition.
+    #' > Returns if the game is in threefold repetition.
     #'
     #' > Example:
     #'
@@ -537,28 +502,208 @@ oo::class create ::chess4tcl::Chess4Tcl {
     method in_threefold_repetition {} {
         return [$dto call-method-str chess.in_threefold_repetition undefined]
     }
+    #' _cmd_ __insufficient\_material__
+    #' 
+    #' > Returns if the game is finshed due to insufficnet material.
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl}
+    #' $chess new
+    #' $chess load "1k6/2R5/1K6/8/8/8/8/8 w - - 0 1" ;# rook it is not
+    #' puts "draw by insufficent material - K vs RK? [$chess insufficient_material]"
+    #' $chess load "1k6/2N5/1K6/8/8/8/8/8 w - - 0 1" ;# bishop it is not
+    #' puts "draw by insufficent material - K vs NK? [$chess insufficient_material]"
+    #' ```
+    #'
     method insufficient_material {} {
         return [$dto call-method-str chess.insufficient_material undefined]
     }
+    #'
+    #' _cmd_ __load__ _?FEN?_
+    #' 
+    #' > Load the given fenstring.
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl}
+    #' $chess load "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3"
+    #' puts [$chess fen]
+    #' ```
+    #'
+    method load {fen} {
+        $dto eval "chess.load(\"$fen\")"
+    }
+    #' _cmd_ __moves__ 
+    #' 
+    #' > Returns all possible moves.
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl}
+    #' $chess new
+    #' puts [$chess fen]
+    #' puts [$chess moves]
+    #' ```
+    #'
+    method moves { } {
+        return [split [$dto eval { moves = chess.moves() }] ,]
+    }
+    #' _cmd_ __move__ _?MOVE?_
+    #' 
+    #' > Executes the given move
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl}
+    #' $chess new
+    #' $chess move e4
+    #' $chess move e5
+    #' $chess move Ke2
+    #' puts [$chess board]
+    #' ```
+    #'
+    method move {args} {
+        if {[llength $args]== 1} {
+            set move [lindex $args 0]
+            $dto eval " chess.move(\"$move\") "
+        } else {
+            set from [lindex $args 0]
+            set to [lindex $args 1]
+            $dto moveFromTo $from $to
+        }
+    }
+    #' _cmd_ __new__
+    #' 
+    #' > Create a new game with default position.
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl}
+    #' $chess new
+    #' puts [$chess ascii]
+    #' ```
     method new { } {
         $dto eval "chess =new Chess ()"
     }
     method load_pgn2 {pgn} {
         # did not work
         set pgn [regsub -all {\n +\n} $pgn {\n\n}]
-        set results [$dto call-str chess.load_pgn $pgn]
-        puts "results=$results"
-        return 
+        set result [$dto call-str chess.load_pgn $pgn]
+        return $result
     }
+    #' <a name="loadpgn"></a>
+    #' _cmd_ __load\_pgn__ _PGN_
+    #' 
+    #' > Load the given PGN string.
+    #' 
+    #' > Returns: true if loaded, false otherwise
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl}
+    #' $chess new
+    #' set PGN {[Event "F/S Return Match"]
+    #' [Site "Belgrade, Serbia JUG"]
+    #' [Date "1992.11.04"]
+    #' [Round "29"]
+    #' [White "Fischer, Robert J."]
+    #' [Black "Spassky, Boris V."]
+    #' [Result "1/2-1/2"]
+    #' 
+    #' 1.e4 e5 2.Nf3 Nc6 3.Bb5 {This opening is called the Ruy Lopez.} 3...a6
+    #' 4.Ba4 Nf6 5.O-O Be7 6.Re1 b5 7.Bb3 d6 8.c3 O-O 9.h3 Nb8 10.d4 Nbd7
+    #' 11.c4 c6 12.cxb5 axb5 13.Nc3 Bb7 14.Bg5 b4 15.Nb1 h6 16.Bh4 c5 17.dxe5
+    #' Nxe4 18.Bxe7 Qxe7 19.exd6 Qf6 20.Nbd2 Nxd6 21.Nc4 Nxc4 22.Bxc4 Nb6
+    #' 23.Ne5 Rae8 24.Bxf7+ Rxf7 25.Nxf7 Rxe1+ 26.Qxe1 Kxf7 27.Qe3 Qg5 28.Qxg5
+    #' hxg5 29.b3 Ke6 30.a3 Kd6 31.axb4 cxb4 32.Ra5 Nd5 33.f3 Bc8 34.Kf2 Bf5
+    #' 35.Ra7 g6 36.Ra6+ Kc5 37.Ke1 Nf4 38.g3 Nxh3 39.Kd2 Kb5 40.Rd6 Kc5 41.Ra6
+    #' Nf2 42.g4 Bd3 43.Re6 1/2-1/2
+    #' }
+    #' $chess load_pgn $PGN
+    #' puts [$chess ascii]
+    #' puts [$chess history]
+    #' $chess goto_half_move 10
+    #' puts [$chess ascii]
+    #' $chess load_pgn $PGN
+    #' $chess goto_half_move 5
+    #' puts [$chess ascii]
+    #' ```
+    #'
     method load_pgn {pgn} {
-        return [$dto loadPgn2 $pgn]
+        #return [$dto loadPgn2 $pgn]
+        return [my load_pgn2 $pgn]
     }
-    
+    #' <a name="loadpgn"></a>
+    #' _cmd_ __pgn__
+    #' 
+    #' > Return the current load game as PGN
+    #' 
+    #' > Returns: a PGN string, cimments are probably removed
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl}
+    #' $chess new
+    #' $chess move e4
+    #' $chess move e5
+    #' $chess move f4
+    #' $chess header White "James White"
+    #' $chess header Black "Jimmy Black"    
+    #' $chess header Event "Documentation Game"
+    #' puts [$chess pgn]
+    #' ```
+    #'
     method pgn {} {
         return [$dto call-method-str chess.pgn undefined]
     }
-    method put {piece color square} {
-        return [$dto eval "chess.put({type: '$piece',color: '$color'},'$square')"]
+    #' <a name="put"></a>
+    #' _cmd_ __put__ _piece ?color square?_
+    #' 
+    #' > Places the given piece(s). If only piece is given it must have the form like
+    #'   "`White: Kh1,Pa2,Rg1`" and "`Black: Kh8,Qa6`". That way you can much easier
+    #'   and faster setup a position.
+    #' 
+    #' > Returns: true if correctly placing the pieces / all pieces, false otherwise.
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl}
+    #' $chess clear
+    #' $chess put k w a1
+    #' $chess put k b h8
+    #' $chess put q w g6
+    #' puts [$chess insufficient_material]
+    #' puts [$chess ascii]
+    #' $chess clear
+    #' $chess put "White: Ka1,Pa2"
+    #' $chess put "Black: Kh8,Nh1"    
+    #' puts [$chess ascii]
+    #' ```
+    #'
+    method put {piece {color ""} {square ""}} {
+        if {$color eq ""} {
+            if {[regexp {^Black: } $piece]} {
+                set pieces [regsub {Black: +} $piece ""]
+                foreach piece [split $pieces ,] {
+                    regexp {([A-Z])([a-z][0-9])} $piece -> p square
+                    my put $p b $square
+                }
+            } elseif {[regexp {^White: } $piece]} {
+                set pieces [regsub {White: +} $piece ""]
+                foreach piece [split $pieces ,] {
+                    regexp {([A-Z])([a-z][0-9])} $piece -> p square
+                    set result [my put $p w $square]
+                    if {!$result} {
+                        return false
+                    }
+                }
+            }
+            return true
+        } else {
+            array set pieces [list K KING Q QUEEN] 
+            return [$dto eval "chess.put({type: '$piece',color: '$color'},'$square')"]
+        }
     }
     method reset {} {
         return [$dto call-method-str chess.reset undefined]
@@ -578,7 +723,12 @@ oo::class create ::chess4tcl::Chess4Tcl {
     #' puts [$chess svg]
     #' ```
     #'
-    method svg {{size 400}} {
+    #' Advantage of this is that this display works as well offline as the Unicode Font Merida
+    #' is embedded.
+    #'
+    method svg {args} {
+        array set arg [list -size 400 -font Merida -white-square  "#fdc" -black-square "#ca9"]
+        array set arg $args
         set fontfile $::chess4tcl::fontfile
         if [catch {open $fontfile r} infh] {
             puts stderr "Cannot open $fontfile: $infh"
@@ -593,13 +743,17 @@ oo::class create ::chess4tcl::Chess4Tcl {
             K \u2654 Q \u2655 R \u2656 B \u2657 N \u2658 P \u2659
             k \u265A q \u265B r \u265C b \u265D n \u265E p \u265F
         }
-        set font "@font-face { 
-        font-family: 'Merida'; 
-        src: url(data:font/truetype;charset=utf-8;base64,$b64) format('truetype'); 
-        }"
+        if {$arg(-font) eq "Merida"} {
+            set font "@font-face { 
+            font-family: 'Merida'; 
+            src: url(data:font/truetype;charset=utf-8;base64,$b64) format('truetype'); 
+            }"
+        } else {
+            set font ""
+        }
         set shadow "text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;"
         #set font ""
-        set svg "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 8 8\" width=\"$size\" height=\"$size\" style=\"border: 3px solid #631;\">"
+        set svg "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 8 8\" width=\"$arg(-size)\" height=\"$arg(-size)\" style=\"border: 3px solid #631;\">"
         append svg "<style>$font\ntext.white { $shadow; }\ntext{ font-family: Merida; font-size:0.8px;text-anchor:middle;dominant-baseline:central; border: 2px solid #630; }</style>"
         set board [split $board "\n"]
         set row 0
@@ -608,7 +762,7 @@ oo::class create ::chess4tcl::Chess4Tcl {
             foreach char [split $rank ""] {
                 set x [expr {$col + 0.5}]
                 set y [expr {$row + 0.3}]
-                set fill [expr {($row + $col) % 2 == 0 ? "#fdc" : "#cba"}]
+                set fill [expr {($row + $col) % 2 == 0 ? "$arg(-white-square)" : "$arg(-black-square)"}]
                 append svg "<rect x=\"$col\" y=\"$row\" width=\"1\" height=\"1\" fill=\"$fill\"/>"
                 if {[string is lower $char]} {
                     set piece [string map $pieces $char]
