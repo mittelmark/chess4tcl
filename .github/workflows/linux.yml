@@ -3,13 +3,24 @@ on:
   workflow_dispatch:
     branches: [ master ]
 jobs:
-  test-committed-configure:
+  linux-build:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v4
     - name: Install Tcl
       run: sudo apt install tcl-dev
+    - name: Build and test
+      run: |
+        git clone https://github.com/dbohdan/tcl-duktape.git
+        cd tcl-duktape
+        ./configure && make test
+        ls -l
+  macos-build:
+    runs-on: macos-13
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
     - name: Build and test
       run: |
         git clone https://github.com/dbohdan/tcl-duktape.git
