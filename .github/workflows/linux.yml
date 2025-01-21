@@ -28,5 +28,5 @@ jobs:
         cd tcl-duktape
         ./configure --with-tcl && make test
         ls -l
-        ls /System/Library/Frameworks/
+        ls /System/Library/Frameworks/Tcl.framework/Versions
         find /System/Library/Frameworks/Tcl.framework/Versions -name "tclConfig.sh"
