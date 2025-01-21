@@ -28,7 +28,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with: 
         name: duktape-linux-intel
-        path: duktape
+        path: tcl-duktape/duktape
   macos-build:
     runs-on: macos-13
     steps:
@@ -57,5 +57,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with: 
         name: duktape-macos-intel
-        path: duktape
+        path: tcl-duktape/duktape
 
