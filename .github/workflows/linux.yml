@@ -36,6 +36,9 @@ jobs:
       uses: actions/checkout@v4
     - name: Build and test
       run: |
+        uname -a
+        uname -m
+        uname -o
         brew install tcl-tk@8
         echo -E "puts $::tcl_patchLevel" | tclsh
         git clone https://github.com/dbohdan/tcl-duktape.git
@@ -65,6 +68,9 @@ jobs:
       uses: actions/checkout@v4
     - name: Build and test
       run: |
+        uname -a
+        uname -m
+        uname -o
         brew install tcl-tk@8
         echo -E "puts $::tcl_patchLevel" | tclsh
         git clone https://github.com/dbohdan/tcl-duktape.git
@@ -95,10 +101,15 @@ jobs:
           update: true
           install: >-
             curl
-            git 
+            git
+            make
+            gcc 
     - name: test
       shell: msys2 {0}
       run: |
+        uname -a
+        uname -m
+        uname -o
         uname -a
         #yes | pacman -S git 2> /dev/null
         #yes | pacman -S mingw-w64-x86_64-tcl 2> /dev/null
