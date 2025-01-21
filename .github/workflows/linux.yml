@@ -86,4 +86,14 @@ jobs:
       with: 
         name: duktape-macos-apple
         path: tcl-duktape/duktape
-
+  windows:
+    runs-on: windows-2022
+    defaults:
+      run: 
+        shell: msys2 {0]
+      name: Install MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          install: git mingw-w64-x86_64-toolchain make
+        
