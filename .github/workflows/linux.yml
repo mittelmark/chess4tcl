@@ -24,13 +24,10 @@ jobs:
     - name: Build and test
       run: |
         brew install tcl-tk@8
-        which tclsh
-        which tclsh8.6
-        find /usr/local -name "tclsh*"
         echo -E "puts $::tcl_patchLevel" | tclsh
         git clone https://github.com/dbohdan/tcl-duktape.git
         cd tcl-duktape
-        ./configure --with-tcl /System/Library/Frameworks/Tcl.framework/Versions/Current && make test
+        ./configure --with-tcl /System/Library/Frameworks/Tcl.framework/Versions/8.5 && make test
         ls -l
         ls /System/Library/Frameworks/Tcl.framework/Versions/Current
         find /System/Library/Frameworks/Tcl.framework/Versions -name "tclConfig.sh"
