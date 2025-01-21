@@ -91,5 +91,6 @@ jobs:
     steps:
     - name: first
       uses: msys2/setup-msys2@v2
+    - name: test
       run: |
         uname -a
