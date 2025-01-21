@@ -95,7 +95,11 @@ jobs:
       shell: msys2 {0}
       run: |
         uname -a
-        yes | pacman -S git mingw-w64-x86_64-tcl make mingw-w64-ucrt-x86_64-gcc
+        yes | pacman -S git 
+        yes | pacman -S mingw-w64-x86_64-tcl
+        yes | pacman -S make
+        yes | pacman -S  mingw-w64-ucrt-x86_64-gcc
+        which git
         git clone https://github.com/dbohdan/tcl-duktape.git
         cd tcl-duktape
         ./configure
