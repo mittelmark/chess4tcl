@@ -92,6 +92,7 @@ jobs:
     - name: first
       uses: msys2/setup-msys2@v2
     - name: test
+      shell: msys2 {0}
       run: |
         uname -a
         pacman -S git mingw-w64-x86_64-tcl make mingw-w64-x86_64-toolchain
