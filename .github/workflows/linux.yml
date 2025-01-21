@@ -27,6 +27,8 @@ jobs:
         echo -E "puts $::tcl_patchLevel" | tclsh
         ls /usr/local
         ls /usr/local/bin        
+        find /usr/local -name tclConfig.sh
+        find /usr/local -name "tclsh"
         git clone https://github.com/dbohdan/tcl-duktape.git
         cd tcl-duktape
         ls /System/Library/Frameworks/Tcl.framework/Versions/8.5/
