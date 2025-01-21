@@ -3,21 +3,6 @@ on:
   workflow_dispatch:
     branches: [ master ]
 jobs:
-  test-autoconf:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      
-    - name: Install Tcl
-      run: |
-        ls
-    - name: Build and test
-      run: |
-        git clone https://github.com/dbohdan/tcl-duktape.git
-        cd tcl-duktape
-       ./autogen.sh && ./configure && make test
-       ls -l
   test-committed-configure:
     runs-on: ubuntu-latest
     steps:
