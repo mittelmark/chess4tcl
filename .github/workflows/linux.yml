@@ -33,6 +33,7 @@ jobs:
         cd tcl-duktape
         ls /System/Library/Frameworks/Tcl.framework/Versions/8.5/
         export PATH=/usr/local/Cellar/tcl-tk@8/8.6.16/bin/:$PATH
+        find /usr/local/Cellar/tcl-tk@8/8.6.16/ -name "tclConfig.sh"
         echo -E "puts $::tcl_patchLevel" | tclsh
         ./configure --with-tcl=/usr/local/Cellar/tcl-tk@8/8.6.16 && make test
         ls -l
