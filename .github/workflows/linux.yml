@@ -28,8 +28,7 @@ jobs:
         cd tcl-duktape
         ./configure && make test
         ls -l
-
-  windows:      
+  windows:
     runs-on: windows-2022
     defaults:
       run:
