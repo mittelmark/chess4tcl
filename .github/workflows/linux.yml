@@ -103,7 +103,9 @@ jobs:
             curl
             git
             make
-            gcc 
+            gcc
+            tcl-devel
+            tcl 
     - name: test
       shell: msys2 {0}
       run: |
