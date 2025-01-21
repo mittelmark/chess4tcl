@@ -88,15 +88,8 @@ jobs:
         path: tcl-duktape/duktape
   windows:
     runs-on: windows-2022
-    defaults:
-      run: 
-        shell: msys2 {0]
-    name: Install MSYS2
-    uses: msys2/setup-msys2@v3
-      with:
-        update: true
-        install: > 
-          git
-          mingw-w64-x86_64-toolchain
-          make
-        
+    steps:
+    - name: first
+      uses: msys2/setup-msys2@v2
+      run: |
+        uname -a
