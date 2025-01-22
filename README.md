@@ -79,7 +79,7 @@ The following methods are available:
 - 
 ## Author
 
-@2020-2025 Detlef Groth, University of Potsdam, Germany
+@2017-2025 Detlef Groth, University of Potsdam, Germany
 
 ## License
 

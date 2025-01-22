@@ -1,7 +1,7 @@
 #!/usr/bin/env tclsh
 ##############################################################################
 #  Created       : 2025-01-15 19:21:27
-#  Last Modified : <250122.0827>
+#  Last Modified : <250122.0842>
 #
 #  Description	 : Tcl class using chess.js via Duktape
 #
@@ -991,14 +991,14 @@ Rg8 19.Rad1 Qxf3 20.Rxe7+ Nxe7 21.Qxd7+ Kxd7 22.Bf5+ Ke8
 
 #' ## Author
 #' 
-#' @2020-2025 Detlef Groth, University of Potsdam, Germany
+#' @2017-2025 Detlef Groth, University of Potsdam, Germany
 #'
 #' ## License
 #' 
 #' ```
 #' MIT License
 #' 
-#' Copyright (c) 2020-2025 Detlef Groth
+#' Copyright (c) 2017-2025 Detlef Groth
 #'
 #' Permission is hereby granted, free of charge, to any person obtaining a copy
 #' of this software and associated documentation files (the "Software"), to deal
