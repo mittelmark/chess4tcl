@@ -1,7 +1,7 @@
 #!/usr/bin/env tclsh
 ##############################################################################
 #  Created       : 2025-01-15 19:21:27
-#  Last Modified : <250121.0914>
+#  Last Modified : <250122.0821>
 #
 #  Description	 : Tcl class using chess.js via Duktape
 #
@@ -41,8 +41,7 @@ package require fileutil
 #' 
 #' ## SYNOPSIS PACKAGE
 #' 
-#' ```{.tcl eval=FALSE}
-#' # demo: synopsis
+#' ```{.tcl eval=false}
 #' package require chess4tcl
 #' set chess [::chess4tcl::Chess4Tcl new]
 #' $chess moves
@@ -51,7 +50,7 @@ package require fileutil
 #' $chess board
 #' $chess fen
 #' $chess game_over
-#' $chess get
+#' $chess get a1
 #' $chess header
 #' $chess history
 #' $chess in_check
@@ -59,14 +58,14 @@ package require fileutil
 #' $chess in_draw
 #' $chess in_stalemate
 #' $chess in_threefold_repetition
-#' $chess insufficient_masterial
-#' $chess is_mate
-#' $chess load FEN
-#' $chess load_pgn
+#' $chess insufficient_material
+#' $chess in_checkmate
+#' $chess load FEN-STRING
+#' $chess load_pgn PGN-STRING
 #' $chess new
 #' $chess pgn
-#' $chess put
-#' $chess remove
+#' $chess put B w e4
+#' $chess remove a1
 #' $chess reset
 #' $chess turn
 #' ```
@@ -99,7 +98,7 @@ namespace eval chess4tcl {
 #' 
 #' ### Constructor:
 #'
-#' _::chess4tcl::Chess4Tcl new ?FEN?
+#' _::chess4tcl::Chess4Tcl_ __new__ ?FEN?
 #'
 #' > initialize a new object with an optional FEN string.
 #'
@@ -157,7 +156,7 @@ oo::class create ::chess4tcl::Chess4Tcl {
     }
     #' _cmd_ __board__ _?TTF?_
     #' 
-    #' > Returns and board presentation which can be mebedded into word or libreoffice documemts
+    #' > Returns and board presentation which can be embedded into word or libreoffice documemts
     #'   for instance using the Berlin true type font-
     #'
     #' > Example:
@@ -534,21 +533,6 @@ oo::class create ::chess4tcl::Chess4Tcl {
     method load {fen} {
         $dto eval "chess.load(\"$fen\")"
     }
-    #' _cmd_ __moves__ 
-    #' 
-    #' > Returns all possible moves.
-    #'
-    #' > Example:
-    #'
-    #' ```{.tcl}
-    #' $chess new
-    #' puts [$chess fen]
-    #' puts [$chess moves]
-    #' ```
-    #'
-    method moves { } {
-        return [split [$dto eval { moves = chess.moves() }] ,]
-    }
     #' _cmd_ __move__ _?MOVE?_
     #' 
     #' > Executes the given move
@@ -572,6 +556,21 @@ oo::class create ::chess4tcl::Chess4Tcl {
             set to [lindex $args 1]
             $dto moveFromTo $from $to
         }
+    }
+    #' _cmd_ __moves__ 
+    #' 
+    #' > Returns all possible moves.
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl}
+    #' $chess new
+    #' puts [$chess fen]
+    #' puts [$chess moves]
+    #' ```
+    #'
+    method moves { } {
+        return [split [$dto eval { moves = chess.moves() }] ,]
     }
     #' _cmd_ __new__
     #' 
@@ -705,26 +704,79 @@ oo::class create ::chess4tcl::Chess4Tcl {
             return [$dto eval "chess.put({type: '$piece',color: '$color'},'$square')"]
         }
     }
+    #' <a name="reset"></a>
+    #' _cmd_ __reset__ 
+    #' 
+    #' > Reset a board to the initial starting position.
+    #' 
+    #' > Returns: true if correctly sucess, otherwise false
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl}
+    #' $chess new
+    #' $chess move e4
+    #' puts [$chess ascii]
+    #' $chess reset
+    #' puts [$chess ascii]
+    #' ```
+    
     method reset {} {
         return [$dto call-method-str chess.reset undefined]
     }
+    #' <a name="remove"></a>
+    #' _cmd_ __remove__ _square_
+    #' 
+    #' > Remove a piece from the given square.
+    #' 
+    #' > Returns: true if correctly sucess, otherwise false
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl}
+    #' $chess clear
+    #' $chess put "White: Ka1,Pa2,Ph2"
+    #' $chess put "Black: Kh8,Nh1"    
+    #' puts [$chess ascii]
+    #' puts [$chess remove h3]
+    #' puts [$chess remove h2]
+    #' puts [$chess ascii]
+    #' ```
+
     method remove {square} {
         set res [list]
-        puts [$dto eval "chess.remove(\"$square\")"]
         if {[$dto eval "chess.remove(\"$square\")"] eq "null"} {
-            return $res
+            return false
+        } else {
+            return true
         }
-        foreach key [$dto eval "Object.keys(chess.remove(\"$square\"))"] {
-            lappend res [list $key [$dto eval "chess.remove(\"$square\").$key"]]
-        }
-        return $res
+        #foreach key [$dto eval "Object.keys(chess.remove(\"$square\"))"] {
+        #    lappend res [list $key [$dto eval "chess.remove(\"$square\").$key"]]
+        #}
+        #return $res
     }
-    #' ```{.tcl results=asis}
-    #' puts [$chess svg]
-    #' ```
+    #' <a name="svg"></a>
+    #' _cmd_ __svg__ _?args?_
+    #' 
+    #' > Creates a SVG image with the Merida font embedded. In contrast to the gboard representation
+    #'   this the display of this board does not require an internet connection.
+    #' 
+    #' > Arguments:
+    #' - _-size_ - board size, default: 400
+    #' - _-font_ - the used font, currently only Merida should be used, default: Merida
+    #' - _-white-square_ - color of the white squares, default: #fdc
+    #' - _-black-square_ - color of the black squares: default: #ca9
     #'
-    #' Advantage of this is that this display works as well offline as the Unicode Font Merida
-    #' is embedded.
+    #' > Returns: a SVG image of the current board.
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl results="asis"}
+    #' $chess clear
+    #' $chess put "White: Ka1,Pa2,Pb2"
+    #' $chess put "Black: Kh8,Na8"    
+    #' puts [$chess svg -size 300]
+    #' ```
     #'
     method svg {args} {
         array set arg [list -size 400 -font Merida -white-square  "#fdc" -black-square "#ca9"]
@@ -761,7 +813,7 @@ oo::class create ::chess4tcl::Chess4Tcl {
             set col 0
             foreach char [split $rank ""] {
                 set x [expr {$col + 0.5}]
-                set y [expr {$row + 0.3}]
+                set y [expr {$row + 0.5}]
                 set fill [expr {($row + $col) % 2 == 0 ? "$arg(-white-square)" : "$arg(-black-square)"}]
                 append svg "<rect x=\"$col\" y=\"$row\" width=\"1\" height=\"1\" fill=\"$fill\"/>"
                 if {[string is lower $char]} {
@@ -779,8 +831,26 @@ oo::class create ::chess4tcl::Chess4Tcl {
         append svg "</svg>"
         return $svg
     }
+    #' <a name="turn"></a>
+    #' _cmd_ __turn__
+    #' 
+    #' > Evaluates which turn it is.
+    #'
+    #' > Returns: a SVG image of the current board.
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl}
+    #' $chess new
+    #' $chess move e4
+    #' $chess move e5
+    #' puts [$chess turn]
+    #' $chess move f4
+    #' puts [$chess turn]
+    #' ```
+    #'
    method turn {} {
-       $dto call-method-str chess.turn undefined
+       return [$dto call-method-str chess.turn undefined]
    }
 }
 
@@ -920,3 +990,34 @@ Rg8 19.Rad1 Qxf3 20.Rxe7+ Nxe7 21.Qxd7+ Kxd7 22.Bf5+ Ke8
     pack [text .t]
     .t insert end [regsub -all " " [$chess board true] "   "]
 }
+
+#' ## Author
+#' 
+#' @2020-2025 Detlef Groth, University of Potsdam, Germany
+#'
+#' ## License
+#' 
+#' ```
+#' MIT License
+#' 
+#' Copyright (c) 2020-2025 Detlef Groth
+#'
+#' Permission is hereby granted, free of charge, to any person obtaining a copy
+#' of this software and associated documentation files (the "Software"), to deal
+#' in the Software without restriction, including without limitation the rights
+#' to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#' copies of the Software, and to permit persons to whom the Software is
+#' furnished to do so, subject to the following conditions:
+#' 
+#' The above copyright notice and this permission notice shall be included in all
+#' copies or substantial portions of the Software.
+#' 
+#' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#' IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#' FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#' AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#' LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#' OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#' SOFTWARE.
+#' ```
+#'
