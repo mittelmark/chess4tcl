@@ -107,7 +107,7 @@ jobs:
       with: 
         name: chess4tcl-duktape-macos-apple
         path: tcl-duktape/release
-  windows:
+  windows-intel-build:
     runs-on: windows-2022
     steps:
     - name: first
@@ -133,16 +133,21 @@ jobs:
         ./configure
         make
         ls -l
-        mkdir duktape
-        mv lib/*.tcl duktape/
-        mv pkgIndex.tcl duktape/
-        mv *dll duktape/
-        mv LICENSE duktape/
-        ls -lh duktape/*
-        export TCLLIBPATH=`pwd`
+        mkdir -p release/duktape
+        mv lib/*.tcl release/duktape/
+        mv pkgIndex.tcl release/duktape/
+        mv *dll release/duktape/
+        mv LICENSE release/duktape/
+        ls -lh release/duktape/*
+        export TCLLIBPATH=`pwd`/release
+        echo "testing tcl-duktape"
         echo -E "lappend auto_path . ; puts [package require duktape]\n" | tclsh
+        mkdir release/chess4tcl
+        cp ../chess4tcl/*.* release/chess4tcl/
+        echo "testing chess4tcl"  
+        echo -E "lappend auto_path . ; puts [package require chess4tcl]\n" | tclsh
     - name: Upload Windows Msys build Package
       uses: actions/upload-artifact@v4
       with: 
-        name: duktape-windows
-        path: tcl-duktape/duktape
+        name: chess4tcl-duktape-windows-intel
+        path: tcl-duktape/release
