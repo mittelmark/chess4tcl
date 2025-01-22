@@ -1,7 +1,7 @@
 #!/usr/bin/env tclsh
 ##############################################################################
 #  Created       : 2025-01-15 19:21:27
-#  Last Modified : <250122.0842>
+#  Last Modified : <250122.0950>
 #
 #  Description	 : Tcl class using chess.js via Duktape
 #
@@ -24,7 +24,6 @@
 package require duktape
 package require duktape::oo
 package provide chess4tcl 0.1.0
-package require fileutil
 
 #' ---
 #' author: Detlef Groth, University of Potsdam, Germany
@@ -123,7 +122,14 @@ oo::class create ::chess4tcl::Chess4Tcl {
         }
         
         # Set up the game.
-        $dto eval [::fileutil::cat $chess4tcl::chessfile]
+        if [catch {open $chess4tcl::chessfile r} infh] {
+            return -code [error "Cannot open $chess4tcl::chessfile: $infh"]
+            
+        } else {
+            $dto eval [read $infh]
+            close $infh
+        }
+        # $dto eval [::fileutil::cat $chess4tcl::chessfile]
         if {$fen ne ""} {
             $dto eval " chess = new Chess (\"$fen\") "
         } else {
