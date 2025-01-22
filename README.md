@@ -67,6 +67,16 @@ The following methods are available:
 - `cmd svg ARGS` - returns a SVG image of the current board
 - `cmd turn` - returns who is in turn on the current board
 
+## Acknowledgments
+
+- [tcl-duktape by D. Bohdan](https://github.com/dbohdan/tcl-duktape)  - Using
+  Javascript with Tcl (MIT License)
+- [chess.js by Jeff Hlywa](https://github.com/jhlywa/chess.js)
+  - TypeScript/Javascript chess library  (BSD 2 License)
+- [Chess Merida Unicode by Michaël Peeters](https://github.com/xeyownt/chess_merida_unicode)
+  -  mapping  of  the  Unicode  chess  characters  to the  chess  font  Merida
+  (Unlicense License)
+- 
 ## Author
 
 @2020-2025 Detlef Groth, University of Potsdam, Germany

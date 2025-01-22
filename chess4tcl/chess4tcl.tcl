@@ -1,7 +1,7 @@
 #!/usr/bin/env tclsh
 ##############################################################################
 #  Created       : 2025-01-15 19:21:27
-#  Last Modified : <250122.0821>
+#  Last Modified : <250122.0827>
 #
 #  Description	 : Tcl class using chess.js via Duktape
 #
@@ -261,7 +261,7 @@ oo::class create ::chess4tcl::Chess4Tcl {
     #'
     #' ```{.tcl}
     #' $chess load "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3"
-    #' $chess board
+    #' puts [$chess board]
     #' puts [$chess game_over]
     #' ```
     #'
@@ -302,7 +302,7 @@ oo::class create ::chess4tcl::Chess4Tcl {
     #'
     #' ```{.tcl}
     #' $chess load "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3"
-    #' $chess board
+    #' puts [$chess board]
     #' puts [$chess get e1]
     #' ```
     #'
@@ -403,12 +403,10 @@ oo::class create ::chess4tcl::Chess4Tcl {
     #' $chess move f4
     #' puts [$chess in_check]
     #' $chess move Qh4
+    #' puts [$chess noard]
     #' puts [$chess in_check]
     #' ```
     #' 
-    #' ```{.tcl results="asis"}
-    #' puts [$chess gboard]
-    #' ```
     #'
     method in_check {} {
         return [$dto call-method-str chess.in_check undefined]

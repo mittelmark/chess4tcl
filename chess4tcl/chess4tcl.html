@@ -186,8 +186,17 @@ puts [$chess fen]</code></pre><pre class='code'><code class='tclout'>rnbqkbnr/pp
 </blockquote>
 
 <pre class='code'><code class='tclcode'>$chess load &quot;rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3&quot;
-$chess board
-puts [$chess game_over]</code></pre><pre class='code'><code class='tclout'>true</code></pre>
+puts [$chess board]
+puts [$chess game_over]</code></pre><pre class='code'><code class='tclout'>rnb.kbnr
+pppp.ppp
+ . . . .
+. . p . 
+ . . PPq
+. . . . 
+PPPPP. P
+RNBQKBNR
+
+true</code></pre>
 
 <p><em>cmd</em> <strong>gboard</strong></p>
 
@@ -208,8 +217,17 @@ puts [$chess game_over]</code></pre><pre class='code'><code class='tclout'>true<
 </blockquote>
 
 <pre class='code'><code class='tclcode'>$chess load &quot;rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3&quot;
-$chess board
-puts [$chess get e1]</code></pre><pre class='code'><code class='tclout'>k w</code></pre>
+puts [$chess board]
+puts [$chess get e1]</code></pre><pre class='code'><code class='tclout'>rnb.kbnr
+pppp.ppp
+ . . . .
+. . p . 
+ . . PPq
+. . . . 
+PPPPP. P
+RNBQKBNR
+
+k w</code></pre>
 
 <p><em>cmd</em> <strong>goto_half_move</strong> <em>N</em></p>
 
@@ -267,10 +285,8 @@ $chess move e5
 $chess move f4
 puts [$chess in_check]
 $chess move Qh4
-puts [$chess in_check]</code></pre><pre class='code'><code class='tclout'>false
-true</code></pre>
-
-<pre class='code'><code class='tclcode'>puts [$chess gboard]</code></pre><div style="max-width: 400px;margin-left:35px;"><g-chess-board fen="rnb1kbnr/pppp1ppp/8/4p3/4PP1q/8/PPPP2PP/RNBQKBNR" style="--square-color-dark: hsl(27deg, 36%, 55%);--square-color-light: hsl(37deg, 66%, 83%);"></g-chess-board></div>
+puts [$chess noard]
+puts [$chess in_check]</code></pre><pre class='code'><code class='tclerr'>unknown method &quot;noard&quot;: must be ascii, board, clear, destroy, fen, game_over, gboard, get, goto_half_move, header, history, in_check, in_checkmate, in_draw, in_stalemate, in_threefold_repetition, insufficient_material, load, load_pgn, load_pgn2, move, moves, new, pgn, put, remove, reset, svg or turn</code></pre>
 
 <p><em>cmd</em> <strong>in_checkmate</strong></p>
 
