@@ -30,7 +30,7 @@ jobs:
     - name: Upload Linux Intel Package
       uses: actions/upload-artifact@v4
       with: 
-        name: duktape-linux-intel
+        name: chess4tcl-duktape-linux-intel
         path: tcl-duktape/release
   macos-intel-build:
     runs-on: macos-13
@@ -51,19 +51,22 @@ jobs:
         echo -E "puts $::tcl_patchLevel" | tclsh
         ./configure --with-tcl=/usr/local/Cellar/tcl-tk@8/8.6.16/lib && make
         ls -l
-        mkdir duktape
-        mv lib/*.tcl duktape/
-        mv pkgIndex.tcl duktape/
-        mv *dylib duktape/
-        mv LICENSE duktape/
-        ls -lh duktape/*
-        export TCLLIBPATH=`pwd`
+        mkdir -p release/duktape
+        mv lib/*.tcl release/duktape/
+        mv pkgIndex.tcl release/duktape/
+        mv *dylib release/duktape/
+        mv LICENSE release/duktape/
+        ls -lh release/duktape/*
+        export TCLLIBPATH=`pwd`/release
         echo -E "lappend auto_path . ; puts [package require duktape]\n" | tclsh
+        mkdir release/chess4tcl
+        cp ../chess4tcl/*.* release/chess4tcl/
+        echo -E "lappend auto_path . ; puts [package require chess4tcl]\n" | tclsh
     - name: Upload MacOS Intel Package
       uses: actions/upload-artifact@v4
       with: 
-        name: duktape-macos-intel
-        path: tcl-duktape/duktape
+        name: chess4tcl-duktape-macos-intel
+        path: tcl-duktape/release/duktape
   macos-apple-build:
     runs-on: macos-14
     steps:
