@@ -117,3 +117,4 @@
       --square-color-dark: hsl(27deg, 36%, 55%);
       --square-color-light: hsl(37deg, 66%, 83%);
     }
+    div.fcm { margin-left:20px; }

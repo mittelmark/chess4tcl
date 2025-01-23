@@ -44,6 +44,7 @@ The following methods are available:
 - `cmd gboard` - graphical board display for a browser using [gchessboard](https://github.com/mganjoo/gchessboard)
 - `cmd get square` - returns the current piece on the given square
 - `cmd goto_half_move HM` - move in current game to the given half move
+- `cmd hboard` - board display using pure CSS and HTML with the Merida Chess Font
 - `cmd header ARGS` - either sets the given header or returns all header if no
    argument is given
 - `cmd history VERBOSE` - returns all move with or without details
@@ -74,7 +75,9 @@ The following methods are available:
 - [chess.js by Jeff Hlywa](https://github.com/jhlywa/chess.js) -
   TypeScript/Javascript chess library  (BSD 2 License)
 - [Chess Merida Unicode by Michaël Peeters](https://github.com/xeyownt/chess_merida_unicode) -  mapping  of  the  Unicode  chess  characters  to the  chess  font  Merida
-  (Unlicense License)
+  (Unlicense License) - inspiring svg method
+- [Chess Merida Example using CSS by Manfred Rosenboom"](https://github.com/maroph/chess-merida-webfont) - inspiring hboard method
+- [Freeware Chess Merida Font created by Armando Hernandez Marroquin](https://www.enpassant.dk/chess/fonteng.htm#MERIDA)
 
 ## Author
 

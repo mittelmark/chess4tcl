@@ -1,7 +1,7 @@
 #!/usr/bin/env tclsh
 ##############################################################################
 #  Created       : 2025-01-15 19:21:27
-#  Last Modified : <250122.0950>
+#  Last Modified : <250123.0952>
 #
 #  Description	 : Tcl class using chess.js via Duktape
 #
@@ -28,7 +28,7 @@ package provide chess4tcl 0.1.0
 #' ---
 #' author: Detlef Groth, University of Potsdam, Germany
 #' title: chess4tcl package documentation 0.1.0
-#' date: 2025-01-15
+#' date: 2025-01-22
 #' tcl:
 #'   eval: 1
 #' ---
@@ -163,17 +163,19 @@ oo::class create ::chess4tcl::Chess4Tcl {
     #' _cmd_ __board__ _?TTF?_
     #' 
     #' > Returns and board presentation which can be embedded into word or libreoffice documemts
-    #'   for instance using the Berlin true type font-
+    #'   for instance using the Berlin or the Merida true type fonts.
     #'
+    #' > Arguments:
+    #'   - _TTF_ - chess font, either Berlin or Merida or Raw
     #' > Example:
     #'
     #' ```{.tcl eval=FALSE}
-    #' puts "\n[$chess board true]"
-    #' puts "\n[$chess board]"
+    #' puts "\n[$chess board Merida]"
+    #' puts "\n[$chess board Berlin]"
     #' ```
     #'
 
-    method board {{ttf false}} {
+    method board {{ttf Merida}} {
         set mboard [regsub " .+" [my fen] ""]
         set mboard [regsub -all 1 $mboard "."]
         set mboard [regsub -all 2 $mboard ".."]
@@ -185,33 +187,38 @@ oo::class create ::chess4tcl::Chess4Tcl {
         set mboard [regsub -all 8 $mboard "........"]
         set mboard [regsub -all "/" $mboard ""]
         set fields [string repeat wbwbwbwbbwbwbwbw 4]
-        set res ""
-        if {$ttf} {
+        if {$ttf ne "Raw"} {
             set res "1222222223\n"
         }
         set x 0
         for {set row 0} {$row < 8} { incr row } {
-            if {$ttf} {
+            if {$ttf ne "Raw"} {
                 append res "4"
             }
             for {set col 0} {$col < 8} { incr col } {
                 set field [string range $fields $x $x]
                 set slot [string range $mboard [expr {$row*8+$col}] [expr {$row*8+$col}]]
                 if {$slot eq "."} {
-                    if {$ttf && $field eq "w"} {
+                    if {$ttf ne "Raw" && $field eq "w"} {
                         append res " "
-                    } elseif {$ttf && $field eq "b"} {
+                    } elseif {$ttf ne "Raw" && $field eq "b"} {
                         append res "+"
-                    } elseif {$field eq "w"} {
-                        append res " "
                     } else {
                         append res .
                     }
                 } else {
-                    if {$ttf && $field eq "w"} {
-                        set piece [string map {K k Q q R r B b N h P p k l q w r t b n n j p o} $slot]
-                    } elseif {$ttf && $field eq "b"} {
-                        set piece [string map {K K Q Q R R B B N H P P k L q W r T b N n J p O} $slot]
+                    if {$ttf ne "Raw" && $field eq "w"} {
+                        if {$ttf eq "Berlin"} {
+                            set piece [string map {K k Q q R r B b N h P p k l q w r t b n n j p o} $slot]
+                        } else {
+                            set piece [string map {K k Q q R r B b N n P p k l q w r t b v n m p o} $slot]
+                        }
+                    } elseif {$ttf ne "Raw" &&  $field eq "b"} {
+                        if {$ttf eq "Berlin"} {
+                            set piece [string map {K K Q Q R R B B N H P P k L q W r T b N n J p O} $slot]
+                        } else {
+                            set piece [string map {K K Q Q R R B B N N P P k L q W r T b V n M p O} $slot]
+                        }
                     } else {
                         set piece $slot
                     }
@@ -219,12 +226,12 @@ oo::class create ::chess4tcl::Chess4Tcl {
                 }
                 incr x
             }
-            if {$ttf} {
+            if {$ttf ne "Raw"} {
                 append res "5"
             }
             append res "\n"
         }
-        if {$ttf} {
+        if {$ttf ne "Raw"} {
             append res "7888888889"
         }
         return $res
@@ -338,6 +345,37 @@ oo::class create ::chess4tcl::Chess4Tcl {
         for {set i 0} {$i < $hm} {incr i 1} {
             my move [lindex $moves $i]
         }
+    }
+    #' _cmd_ **hboard**
+    #' 
+    #' > Displays the current board within an HTML page using an embedded Merida font.
+    #'
+    #' > Example:
+    #'
+    #' ```{.tcl results=asis}
+    #' puts [$chess hboard]
+    #' ```
+    #'
+    method hboard {} {
+        variable hboard
+        set res ""
+        set fen [regsub { .+} [my fen] ""]
+        
+        if {![info exists hboard]} {
+            set cssfile [file join [file dirname $::chess4tcl::fontfile] merida.css]
+            if [catch {open $cssfile r} infh] {
+                puts stderr "Cannot open $cssfile: $infh"
+            } else {
+                append res <style>
+                append res [read $infh]
+                append res </style>
+            }
+            set hboard true
+        }
+        set board [my board]
+        append res {<div class="fcm">BOARD</div>}
+        set res [regsub BOARD $res "$board"]
+        return $res
     }
     #' _cmd_ **header** *?args?*
     #' 
@@ -794,7 +832,7 @@ oo::class create ::chess4tcl::Chess4Tcl {
             set b64 [regsub -all {[\n ]} $b64 ""]
             close $infh
         }
-        set board [my board]
+        set board [my board Raw]
         set pieces {
             K \u2654 Q \u2655 R \u2656 B \u2657 N \u2658 P \u2659
             k \u265A q \u265B r \u265C b \u265D n \u265E p \u265F
@@ -819,13 +857,13 @@ oo::class create ::chess4tcl::Chess4Tcl {
                 set x [expr {$col + 0.5}]
                 set y [expr {$row + 0.5}]
                 set fill [expr {($row + $col) % 2 == 0 ? "$arg(-white-square)" : "$arg(-black-square)"}]
-                append svg "<rect x=\"$col\" y=\"$row\" width=\"1\" height=\"1\" fill=\"$fill\"/>"
+                append svg "<rect x=\"$col\" y=\"$row\" width=\"1\" height=\"1\" fill=\"$fill\"/>\n"
                 if {[string is lower $char]} {
                     set piece [string map $pieces $char]
-                    append svg "<text x=\"$x\" y=\"$y\">$piece</text>"
+                    append svg "<text x=\"$x\" y=\"$y\">$piece</text>\n"
                 } elseif {[string is upper $char]} {
                     set piece [string map $pieces $char]
-                    append svg "<text x=\"$x\" y=\"$y\" class=\"white\">$piece</text>"                   
+                    append svg "<text x=\"$x\" y=\"$y\" class=\"white\">$piece</text>\n"
                 } 
                 incr col
             }
@@ -859,20 +897,59 @@ oo::class create ::chess4tcl::Chess4Tcl {
 }
 
 proc ::chess4tcl::usage {app} {
-    puts "Usage $app ?-h,--help? FENSTRING ?OUTFILE?"
+    puts "Usage: $app ?-h ,--help, --format FORMAT? FENSTRING ?OUTFILE?"
 }
 proc ::chess4tcl::help {app argv} {
-    puts help
+    puts "chess4tcl - Tcl application to display chessboard postions"
+    puts "            @ Detlef Groth, University of Potsdam, Germany\n"
+    usage $app
+    puts "\nOptions:\n"
+    puts "   --format   FORMAT - output format, either svg (default), ascii, css, html or rtf"
+    puts "\nArguments:\n"
+    puts "  FENSTRING        - FEN string encoded chess position"
+    puts "  OUTFILE          - file to write the position into"
+    puts "                     if not given or a - (minus) uses stdout"
 }
 proc ::chess4tcl::main {argv} {
-    puts $argv
-    if {[llength $argv] == 1} {
+    set format svg
+    set out stdout
+    if {[lindex $argv 0] eq "--format"} {
+        set format [string tolower [lindex $argv 1]]
+        set argv [lrange $argv 2 end]
+    }
+    if {[llength $argv] == 0} {
+        puts "Error: No FEN string given!"
+        usage $::argv0
+        return
+    }
+    set fen [lindex $argv 0]
+    if {![regexp {^[a-zA-z0-8]+/[a-zA-z0-8]+/} $fen]} {
+        puts "Error: '$fen' is not a valid FEN string"
+        usage $::argv0
+        return
+    }
+    set chess [::chess4tcl::Chess4Tcl new]
+    $chess load [lindex $argv 0]
+    if {$format eq "ascii"} {
+        set board [$chess board]
+    } elseif {$format eq "svg"} {
+        set board [$chess svg]
+    } elseif {$format eq "css"} {
+        set board [$chess hboard]
+    } elseif {$format eq "rtf"} {
+        set board [$chess board true]
+    } elseif {$format eq "html"} {
+        set board [$chess gboard]
+    }
+
+    if {[llength $argv] == 1 ||  [lindex $argv 1] eq "-"} {
+        puts $board
+    } elseif {[llength $argv] == 2} {
+        set filename [lindex $argv 1]
         set chess [::chess4tcl::Chess4Tcl new]
-        $chess load [lindex $argv 0]
-        puts [$chess board]
-        
-    } else {
-        puts main
+        set out [open $filename w 0600]
+        puts $out $board
+        close $out
     }
 }
 if {[info exists argv0] && $argv0 eq [info script]} {
