@@ -1,0 +1,184 @@
+#!/usr/bin/env tclsh
+package require tcltest
+lappend auto_path [file join [file dirname [info script]] ..]
+
+tcltest::test load-1.1 {check package loading} {
+    package require chess4tcl
+} {0.1.0}
+
+tcltest::test new-1.1 {check constructor} {
+    set chess [::chess4tcl::Chess4Tcl new]
+    $chess fen
+} {rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1}
+
+tcltest::test new-1.2 {check move length} {
+    llength [$chess moves]
+} {20}
+
+tcltest::test moves-1.1 {check a few moves} {
+    $chess move e4
+    $chess turn
+    $chess move e5
+    $chess move f4
+    $chess fen
+} {rnbqkbnr/pppp1ppp/8/4p3/4PP2/8/PPPP2PP/RNBQKBNR b KQkq f3 0 2}
+
+tcltest::test ascii-1.1 {check ascii ouput} {
+    $chess ascii
+} {   +------------------------+
+ 8 | r  n  b  q  k  b  n  r |
+ 7 | p  p  p  p  .  p  p  p |
+ 6 | .  .  .  .  .  .  .  . |
+ 5 | .  .  .  .  p  .  .  . |
+ 4 | .  .  .  .  P  P  .  . |
+ 3 | .  .  .  .  .  .  .  . |
+ 2 | P  P  P  P  .  .  P  P |
+ 1 | R  N  B  Q  K  B  N  R |
+   +------------------------+
+     a  b  c  d  e  f  g  h
+}
+
+tcltest::test gameover-1.1 {check game over functionlity} {
+    $chess game_over
+} {false}
+
+tcltest::test gameover-1.2 {check game over functionlity} {
+    $chess load "4k3/4P3/4K3/8/8/8/8/8 b - - 0 78"
+    $chess game_over
+} {true}
+
+tcltest::test gameover-1.3 {check game over functionlity} {
+    $chess new
+    $chess move e4
+    $chess move e5
+    $chess move Na3
+    $chess move Qh4
+    $chess move Ke2
+    $chess move Qxe4
+    $chess game_over
+} {true}
+
+tcltest::test get-1.1 {check get function} {
+   $chess load "4k3/4P3/4K3/8/8/8/8/8 b - - 0 78"
+   $chess get d8
+} {{} {}}
+
+tcltest::test get-1.2 {check get function} {
+   $chess get e8
+} {k b}
+
+tcltest::test get-1.3 {check get function} {
+   $chess get e7
+} {p w}
+
+
+tcltest::test history-1.1 {check history} {
+    $chess new
+    $chess move e4
+    $chess move e5
+    $chess move Na3
+    $chess move Qh4
+    $chess move Ke2
+    $chess move Qxe4
+    $chess history
+} {e4 e5 Na3 Qh4 Ke2 Qxe4#}
+
+tcltest::test pgn-1.1 {check pgn output} {
+    $chess new
+    $chess move e4
+    $chess move e5
+    $chess move f4
+    $chess pgn
+} {1. e4 e5 2. f4}
+
+tcltest::test pgn-1.2 {check pgn output} {
+    $chess header Black "James Black"
+    $chess header White "Jimmy White"
+    $chess pgn
+} {[Black "James Black"]
+[White "Jimmy White"]
+
+1. e4 e5 2. f4}
+
+
+::tcltest::cleanupTests 0
+return
+puts "puts in mate? "
+puts [$chess in_check]
+$chess load "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+$chess move e4
+$chess move e5
+$chess move f4
+puts [$chess history]
+puts [$chess history true]
+$chess load "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3"
+puts [$chess game_over]
+#puts [$chess in_mate]
+$chess load "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3"
+puts [$chess game_over]
+#puts [$chess in_mate]
+#puts [$chess in draw]
+#puts [$chess in check]
+set pgn {[Event "Casual Game"]
+[Site "Berlin GER"]
+[Date "1852.??.??"]
+[EventDate "?"]
+[Round "?"]
+[Result "1-0"]
+[White "Adolf Anderssen"]
+[Black "Jean Dufresne"]
+[ECO "C52"]
+[WhiteElo "?"]
+[BlackElo "?"]
+[PlyCount "47"]
+       
+1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.b4 Bxb4 5.c3 Ba5 6.d4 exd4 7.O-O
+d3 8.Qb3 Qf6 9.e5 Qg6 10.Re1 Nge7 11.Ba3 b5 12.Qxb5 Rb8 13.Qa4
+Bb6 14.Nbd2 Bb7 15.Ne4 Qf5 16.Bxd3 Qh5 17.Nf6+ gxf6 18.exf6
+Rg8 19.Rad1 Qxf3 20.Rxe7+ Nxe7 21.Qxd7+ Kxd7 22.Bf5+ Ke8
+23.Bd7+ Kf8 24.Bxe7# 1-0
+}
+ # did not work
+$chess load_pgn $pgn
+puts "loaded?"
+puts [$chess ascii]
+puts [$chess pgn]
+puts "result?"
+puts [$chess header]
+$chess load "k7/8/n7/8/8/8/8/7K b - - 0 1"
+$chess header White "Robert J. Fisher"
+$chess header Black "Mikhail Tal"
+puts [$chess insufficient_material]
+$chess clear
+puts [$chess put p b a5]
+puts [$chess put k w h1]
+puts [$chess fen]
+puts [$chess put z w a1] ;# invalid
+puts [$chess insufficient_material]
+puts [$chess remove a5]
+puts [$chess remove a1] ;# not possible
+$chess clear
+$chess load "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"
+puts [$chess turn]
+puts [$chess in_check]
+$chess clear
+puts "loading start position"
+$chess load "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+#$chess new
+$chess move e4
+$chess move e5
+$chess move Na3 
+$chess move Qh4
+$chess move Ke2
+puts "check? [$chess in_check]"
+$chess move Qxe4
+puts [$chess ascii]
+puts "check? [$chess in_check]"
+puts "mate? [$chess in_checkmate]"
+puts [$chess board]
+puts [$chess board Berlin]
+package require Tk
+font create chessberlin -family "Chess Berlin" -size 20 
+option add *font chessberlin
+pack [text .t]
+.t insert end [$chess board Berlin]
