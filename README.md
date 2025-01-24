@@ -23,13 +23,28 @@ puts [$chess game_over]
 ```
 
 To  display a board  within a  Markdown/HTML  document  you can use either the
-`svg` or the  `gboard` methods:
+`svg`, the  `gboard` or the `hboard`  methods.  The gboard  method  embeds the
+gchessboard web component and requires an internet  connection to download the
+required Javascript code for display. Here the output:
+
 
 ```
-puts [$chess $gboard]
+puts [$chess gboard]
 ```
 
 ![](assets/gboard-example.png)
+
+
+The  `hboard`  method just uses the  embedded  Merida true type chess font and
+displays the  chessboard  in the  black/white  style purely CSS driven. As the
+font and the style rules are  automatically  included this does not require an
+internet connection. Here an example output:
+
+```
+puts [$chess hboard]
+```
+
+![](assets/hboard-example.png)
 
 ## API
 
@@ -37,7 +52,7 @@ The following methods are available:
 
 - `::chess4tcl::Chess4Tcl new` - create a new command
 - `cmd ascii` - return a board representation in ascii
-- `cmd board` - return the board using true type font representation
+- `cmd board` - return the board using true type font representations, defaults to Merida
 - `cmd clear` - create an empty board
 - `cmd fen` - return the current board as [FEN string](https://www.chess.com/terms/fen-chess)
 - `cmd game_over` - check if the current position is final
@@ -67,6 +82,20 @@ The following methods are available:
 - `cmd remove square` - Remove a piece from a given square
 - `cmd svg ARGS` - returns a SVG image of the current board
 - `cmd turn` - returns who is in turn on the current board
+
+## Command line application
+
+The package is as well a standalone command line application which can be used
+to  convert  FEN  strings  into SVG, RTF or HTML  output.  If the  package  is
+properly          installed          you          can          use         the
+[tclmain](https://github.com/mittelmark/tclmain)    application    to   do   a
+conversion like this:
+
+```
+tclmain -m chess4tcl 
+
+```
+
 
 ## Acknowledgments
 
