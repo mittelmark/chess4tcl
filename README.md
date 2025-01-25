@@ -26,7 +26,7 @@ this package on your own using your package manager or Tcl installer as these co
 Download and unzip the files then just into a folder belonging to your `auto_path` variable as usually.
 
 
-## Example
+## Examples
 
 ```
 package require chess4tcl
