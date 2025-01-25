@@ -16,7 +16,8 @@ Using the Tcl tools [tmdoc](https://github.com/mittelmark/tmdoc) and [pandoc](ht
 
 ## Documentation 
 
-- [Manual](https://htmlpreview.github.io/?https://raw.githubusercontent.com/mittelmark/chess4tcl/master/chess4tcl/chess4tcl.html)
+- [Package Manual](https://htmlpreview.github.io/?https://raw.githubusercontent.com/mittelmark/chess4tcl/master/chess4tcl/chess4tcl.html)
+- [Tclers Wiki Page](https://wiki.tcl-lang.org/page/Chess4Tcl)
 
 ## Installation
 
