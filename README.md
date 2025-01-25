@@ -3,7 +3,7 @@
 [![license](https://img.shields.io/badge/license-MIT-lightgray.svg)](https://opensource.org/license/bsd)
 [![Release](https://img.shields.io/github/v/release/mittelmark/chess4tcl.svg?label=current+release)](https://github.com/mittelmark/chess4tcl/releases)
 ![Downloads](https://img.shields.io/github/downloads/mittelmark/chess4tcl/total)
-![Commits](https://img.shields.io/github/commits-since/mittelmark/chss4tcl/latest)
+![Commits](https://img.shields.io/github/commits-since/mittelmark/chess4tcl/latest)
 
 [![Docu Package](https://img.shields.io/badge/Docu-Package-blue)](http://htmlpreview.github.io/?https://github.com/mittelmark/chess4tcl/blob/master/chess4tcl/chess4tcl.html)
 [![Wiki](https://img.shields.io/badge/Docu-Wiki-blue)](https://wiki.tcl-lang.org/page/Chess4Tcl)
