@@ -1,4 +1,5 @@
 # chess4tcl - Tcl library to work with the chessboard
+
 Tcl library  using the [chess.js](https://github.com/jhlywa/chess.js)
 library and the  [tcl-duktape](https://github.com/dbohdan/tcl-duktape) to work
 with chess games and chess positions within Tcl.
@@ -92,8 +93,8 @@ properly          installed          you          can          use         the
 conversion like this:
 
 ```
-tclmain -m chess4tcl 
-
+$ tclmain -m chess4tcl --version
+0.1.0
 ```
 
 
