@@ -12,6 +12,8 @@ Tcl library  using the [chess.js](https://github.com/jhlywa/chess.js)
 library and the  [tcl-duktape](https://github.com/dbohdan/tcl-duktape) to display chess games
 and chess positions using Tcl with Tk applications or within reports using Tcl as their report language.
 
+Using the Tcl tools [tmdoc](https://github.com/mittelmark/tmdoc) and [pandoc](https://github.com/mittelmark/pandoc) you can create your own chess reports. See the manual link below for an example.
+
 ## Documentation 
 
 - [Manual](https://htmlpreview.github.io/?https://raw.githubusercontent.com/mittelmark/chess4tcl/master/chess4tcl/chess4tcl.html)
