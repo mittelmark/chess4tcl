@@ -1,7 +1,7 @@
 #!/usr/bin/env tclsh
 ##############################################################################
 #  Created       : 2025-01-15 19:21:27
-#  Last Modified : <250123.0952>
+#  Last Modified : <250124.1629>
 #
 #  Description	 : Tcl class using chess.js via Duktape
 #
@@ -629,7 +629,7 @@ oo::class create ::chess4tcl::Chess4Tcl {
     }
     method load_pgn2 {pgn} {
         # did not work
-        set pgn [regsub -all {\n +\n} $pgn {\n\n}]
+        set pgn [regsub -all "\n +\n" $pgn "\n\n"]
         set result [$dto call-str chess.load_pgn $pgn]
         return $result
     }
