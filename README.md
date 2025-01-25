@@ -41,7 +41,6 @@ To  display a board  within a  Markdown/HTML  document  you can use either the
 gchessboard web component and requires an internet  connection to download the
 required Javascript code for display. Here the output:
 
-
 ```
 puts [$chess gboard]
 ```
@@ -119,9 +118,57 @@ properly          installed          you          can          use         the
 [tclmain](https://github.com/mittelmark/tclmain)    application    to   do   a
 conversion like this:
 
-```
+```bash
 $ tclmain -m chess4tcl --version
 0.1.0
+$ tclmain -m chess4tcl --help
+ chess4tcl - Tcl application to display chessboard postions
+            @ Detlef Groth, University of Potsdam, Germany
+
+ Usage: tclmain -m chess4tcl ?-h ,--help, --format FORMAT? FENSTRING ?OUTFILE?
+
+ Options:
+
+    --format   FORMAT - output format, either svg (default), ascii, css, html or rtf
+
+ Arguments:
+
+   FENSTRING        - FEN string encoded chess position
+   OUTFILE          - file to write the position into
+                     if not given or a - (minus) uses stdout
+
+$ tclmain -m chess4tcl --format ascii "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3"
+chess4tcl - Tcl application to display chessboard postions
+            @ Detlef Groth, University of Potsdam, Germany
+
+ Usage: tclmain -m chess4tcl ?-h ,--help, --format FORMAT? FENSTRING ?OUTFILE?
+
+ Options:
+
+    --format   FORMAT - output format, either svg (default), ascii, css, html or rtf
+
+ Arguments:
+
+   FENSTRING        - FEN string encoded chess position
+   OUTFILE          - file to write the position into
+                     if not given or a - (minus) uses stdout
+        append res "\n"
+$ tclmain -m chess4tcl --format ascii "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3"
+   +------------------------+
+ 8 | r  n  b  .  k  b  n  r |
+ 7 | p  p  p  p  .  p  p  p |
+ 6 | .  .  .  .  .  .  .  . |
+ 5 | .  .  .  .  p  .  .  . |
+ 4 | .  .  .  .  .  P  P  q |
+ 3 | .  .  .  .  .  .  .  . |
+ 2 | P  P  P  P  P  .  .  P |
+ 1 | R  N  B  Q  K  B  N  R |
+   +------------------------+
+     a  b  c  d  e  f  g  h        
+$ tclmain -m chess4tcl --format html "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3"
+<script type="module" src="https://unpkg.com/gchessboard"></script>
+<div style="max-width: 400px;margin-left:35px;">
+  <g-chess-board fen="rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR" style="--square-color-dark: hsl(27deg, 36%, 55%);--square-color-light: hsl(37deg, 66%, 83%);"></g-chess-board>
 ```
 
 

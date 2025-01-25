@@ -1,7 +1,7 @@
 #!/usr/bin/env tclsh
 ##############################################################################
 #  Created       : 2025-01-15 19:21:27
-#  Last Modified : <250124.1629>
+#  Last Modified : <250125.0802>
 #
 #  Description	 : Tcl class using chess.js via Duktape
 #
@@ -299,9 +299,10 @@ oo::class create ::chess4tcl::Chess4Tcl {
         set style "--square-color-dark: hsl(27deg, 36%, 55%);--square-color-light: hsl(37deg, 66%, 83%);"
         if {![info exists gboard]} {
             append res {<script type="module" src="https://unpkg.com/gchessboard"></script>}
+            append res "\n"
             set gboard true
         }
-        append res {<div style="max-width: 400px;margin-left:35px;"><g-chess-board fen="FEN" style="STYLE"></g-chess-board></div>}
+        append res "<div style=\"max-width: 400px;margin-left:35px;\">\n  <g-chess-board fen=\"FEN\" style=\"STYLE\"></g-chess-board>\n</div>\n"
         set res [regsub FEN $res $fen]
         set res [regsub STYLE $res $style]
         return $res
@@ -897,69 +898,73 @@ oo::class create ::chess4tcl::Chess4Tcl {
 }
 
 proc ::chess4tcl::usage {app} {
-    puts "Usage: $app ?-h ,--help, --format FORMAT? FENSTRING ?OUTFILE?"
+    if {[regexp {tclmain$} $app]} {
+        set app "tclmain -m chess4tcl"
+    }
+    puts " Usage: $app ?-h ,--help, --format FORMAT? FENSTRING ?OUTFILE?"
 }
 proc ::chess4tcl::help {app argv} {
-    puts "chess4tcl - Tcl application to display chessboard postions"
+    puts " chess4tcl - Tcl application to display chessboard postions"
     puts "            @ Detlef Groth, University of Potsdam, Germany\n"
     usage $app
-    puts "\nOptions:\n"
-    puts "   --format   FORMAT - output format, either svg (default), ascii, css, html or rtf"
-    puts "\nArguments:\n"
-    puts "  FENSTRING        - FEN string encoded chess position"
-    puts "  OUTFILE          - file to write the position into"
+    puts "\n Options:\n"
+    puts "    --format   FORMAT - output format, either svg (default), ascii, css, html or rtf"
+    puts "\n Arguments:\n"
+    puts "   FENSTRING        - FEN string encoded chess position"
+    puts "   OUTFILE          - file to write the position into"
     puts "                     if not given or a - (minus) uses stdout"
 }
 proc ::chess4tcl::main {argv} {
-    set format svg
-    set out stdout
-    if {[lindex $argv 0] eq "--format"} {
-        set format [string tolower [lindex $argv 1]]
-        set argv [lrange $argv 2 end]
-    }
-    if {[llength $argv] == 0} {
-        puts "Error: No FEN string given!"
-        usage $::argv0
-        return
-    }
-    set fen [lindex $argv 0]
-    if {![regexp {^[a-zA-z0-8]+/[a-zA-z0-8]+/} $fen]} {
-        puts "Error: '$fen' is not a valid FEN string"
-        usage $::argv0
-        return
-    }
-    set chess [::chess4tcl::Chess4Tcl new]
-    $chess load [lindex $argv 0]
-    if {$format eq "ascii"} {
-        set board [$chess board]
-    } elseif {$format eq "svg"} {
-        set board [$chess svg]
-    } elseif {$format eq "css"} {
-        set board [$chess hboard]
-    } elseif {$format eq "rtf"} {
-        set board [$chess board true]
-    } elseif {$format eq "html"} {
-        set board [$chess gboard]
-    }
-
-    if {[llength $argv] == 1 ||  [lindex $argv 1] eq "-"} {
-        puts $board
-    } elseif {[llength $argv] == 2} {
-        set filename [lindex $argv 1]
-        set chess [::chess4tcl::Chess4Tcl new]
-        set out [open $filename w 0600]
-        puts $out $board
-        close $out
-    }
-}
-if {[info exists argv0] && $argv0 eq [info script]} {
+    global argv0
     if {[lsearch -regex $argv {(-h|--help)}] > -1} {
         ::chess4tcl::help $argv0 $argv
     } elseif {[llength $argv] < 1} {
         ::chess4tcl::usage $argv0
     } else {
-       ::chess4tcl::main $argv
+        set format svg
+        set out stdout
+        if {[lindex $argv 0] eq "--format"} {
+            set format [string tolower [lindex $argv 1]]
+            set argv [lrange $argv 2 end]
+        }
+        if {[llength $argv] == 0} {
+            puts "Error: No FEN string given!"
+            usage $::argv0
+            return
+        }
+        set fen [lindex $argv 0]
+        if {![regexp {^[a-zA-z0-8]+/[a-zA-z0-8]+/} $fen]} {
+            puts "Error: '$fen' is not a valid FEN string"
+            usage $::argv0
+            return
+        }
+        set chess [::chess4tcl::Chess4Tcl new]
+        $chess load [lindex $argv 0]
+        if {$format eq "ascii"} {
+            set board [$chess ascii]
+        } elseif {$format eq "svg"} {
+            set board [$chess svg]
+        } elseif {$format eq "css"} {
+            set board [$chess hboard]
+        } elseif {$format eq "rtf"} {
+            set board [$chess board true]
+        } elseif {$format eq "html"} {
+            set board [$chess gboard]
+        }
+        
+        if {[llength $argv] == 1 ||  [lindex $argv 1] eq "-"} {
+            puts $board
+        } elseif {[llength $argv] == 2} {
+            set filename [lindex $argv 1]
+            set chess [::chess4tcl::Chess4Tcl new]
+            set out [open $filename w 0600]
+            puts $out $board
+            close $out
+        }
     }
+}
+if {[info exists argv0] && $argv0 eq [info script]} {
+    ::chess4tcl::main $argv
 }
 
 if {false} {
