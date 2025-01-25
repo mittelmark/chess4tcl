@@ -1,7 +1,7 @@
 #!/usr/bin/env tclsh
 ##############################################################################
 #  Created       : 2025-01-15 19:21:27
-#  Last Modified : <250125.0815>
+#  Last Modified : <250125.0842>
 #
 #  Description	 : Tcl class using chess.js via Duktape
 #
@@ -448,7 +448,7 @@ oo::class create ::chess4tcl::Chess4Tcl {
     #' $chess move f4
     #' puts [$chess in_check]
     #' $chess move Qh4
-    #' puts [$chess noard]
+    #' puts [$chess ascii]
     #' puts [$chess in_check]
     #' ```
     #' 

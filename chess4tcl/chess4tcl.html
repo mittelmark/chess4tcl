@@ -211,7 +211,11 @@ true</code></pre>
 <p>Example:</p>
 </blockquote>
 
-<pre class='code'><code class='tclcode'>puts [$chess gboard]</code></pre><script type="module" src="https://unpkg.com/gchessboard"></script><div style="max-width: 400px;margin-left:35px;"><g-chess-board fen="rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR" style="--square-color-dark: hsl(27deg, 36%, 55%);--square-color-light: hsl(37deg, 66%, 83%);"></g-chess-board></div>
+<pre class='code'><code class='tclcode'>puts [$chess gboard]</code></pre><script type="module" src="https://unpkg.com/gchessboard"></script>
+
+<div style="max-width: 400px;margin-left:35px;">
+  <g-chess-board fen="rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR" style="--square-color-dark: hsl(27deg, 36%, 55%);--square-color-light: hsl(37deg, 66%, 83%);"></g-chess-board>
+</div>
 
 <p><em>cmd</em> <strong>get</strong> <em>square</em></p>
 
@@ -327,8 +331,21 @@ $chess move e5
 $chess move f4
 puts [$chess in_check]
 $chess move Qh4
-puts [$chess noard]
-puts [$chess in_check]</code></pre><pre class='code'><code class='tclerr'>unknown method &quot;noard&quot;: must be ascii, board, clear, destroy, fen, game_over, gboard, get, goto_half_move, hboard, header, history, in_check, in_checkmate, in_draw, in_stalemate, in_threefold_repetition, insufficient_material, load, load_pgn, load_pgn2, move, moves, new, pgn, put, remove, reset, svg or turn</code></pre>
+puts [$chess ascii]
+puts [$chess in_check]</code></pre><pre class='code'><code class='tclout'>false
+   +------------------------+
+ 8 | r  n  b  .  k  b  n  r |
+ 7 | p  p  p  p  .  p  p  p |
+ 6 | .  .  .  .  .  .  .  . |
+ 5 | .  .  .  .  p  .  .  . |
+ 4 | .  .  .  .  P  P  .  q |
+ 3 | .  .  .  .  .  .  .  . |
+ 2 | P  P  P  P  .  .  P  P |
+ 1 | R  N  B  Q  K  B  N  R |
+   +------------------------+
+     a  b  c  d  e  f  g  h
+
+true</code></pre>
 
 <p><em>cmd</em> <strong>in_checkmate</strong></p>
 
