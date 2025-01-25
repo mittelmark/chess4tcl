@@ -1,17 +1,30 @@
 # chess4tcl - Tcl library to work with the chessboard
 
+[![license](https://img.shields.io/badge/license-MIT-lightgray.svg)](https://opensource.org/license/bsd)
+[![Release](https://img.shields.io/github/v/release/mittelmark/chess4tcl.svg?label=current+release)](https://github.com/mittelmark/chess4tcl/releases)
+![Downloads](https://img.shields.io/github/downloads/mittelmark/chess4tcl/total)
+![Commits](https://img.shields.io/github/commits-since/mittelmark/tchss4tcl/latest)
+
+[![Docu Package](https://img.shields.io/badge/Docu-Package-blue)](http://htmlpreview.github.io/?https://github.com/mittelmark/chess4tcl/blob/master/chess4tcl/chess4tcl.html)
+[![Wiki](https://img.shields.io/badge/Wiki-blue)](https://wiki.tcl-lang.org/page/Chess4Tcl)
+
 Tcl library  using the [chess.js](https://github.com/jhlywa/chess.js)
-library and the  [tcl-duktape](https://github.com/dbohdan/tcl-duktape) to work
-with chess games and chess positions within Tcl.
-
-## Installation
-
-You need the  [tcl-duktape](https://github.com/dbohdan/tcl-duktape)  library  installed to be able to use the Javascript
-code.
+library and the  [tcl-duktape](https://github.com/dbohdan/tcl-duktape) to display chess games
+and chess positions using Tcl with Tk applications or within reports using Tcl as their report language.
 
 ## Documentation 
 
 - [Manual](https://htmlpreview.github.io/?https://raw.githubusercontent.com/mittelmark/chess4tcl/master/chess4tcl/chess4tcl.html)
+
+## Installation
+
+You need the [tcl-duktape](https://github.com/dbohdan/tcl-duktape)  library  installed to be able to use the Javascript
+code. Download the package from the latest [Releases](https://github.com/mittelmark/chess4tcl/releases) page. 
+There are as well downloads for Linux-intel, MacOS-intel, MacOS-apple and Windows-intel provided with included compilations of the
+[tcl-duktape](https://github.com/dbohdan/tcl-duktape) package provided. Use these tcl-duktape package files only if you can't install
+this package on your own using your package manager or Tcl installer as these compilations are untested. 
+Download and unzip the files then just into a folder belonging to your `auto_path` variable as usually.
+
 
 ## Example
 
@@ -47,6 +60,20 @@ puts [$chess hboard]
 
 ![](assets/hboard-example.png)
 
+To display a board for instance within a Tk text widget you need to install a chess font like
+[Chess Berlin](http://www.enpassant.dk/chess/downl/berlin.zip) or 
+[Chess Merida](http://www.enpassant.dk/chess/downl/merid_tt.zip) and then you can do thinks like this:
+
+```
+package require Tk
+font create chessberlin -family "Chess Berlin" -size 20 
+option add *font chessberlin
+pack [text .t]
+t insert end [$chess board Berlin]
+```
+
+The the output in your Tk widget should be the same as in the `$chess hboard` figure.
+
 ## API
 
 The following methods are available:
@@ -70,7 +97,7 @@ The following methods are available:
 - `cmd in_stalemate` - checks if the current position is a checkmate
 - `cmd in_threefold_repetition`  - checks  if the last  moves  resulted  in a
    threefold repetition
-- `cmd  insufficient_material`  - checks if the current position is a draw due
+- `cmd insufficient_material`  - checks if the current position is a draw due
   to insufficient material
 - `cmd load FEN-STRING` - loads the given FEN string
 - `cmd move MOVE` - executes the given move
@@ -100,12 +127,10 @@ $ tclmain -m chess4tcl --version
 
 ## Acknowledgments
 
-- [tcl-duktape by D. Bohdan](https://github.com/dbohdan/tcl-duktape)  - Using
-  Javascript with Tcl (MIT License)
-- [chess.js by Jeff Hlywa](https://github.com/jhlywa/chess.js) -
-  TypeScript/Javascript chess library  (BSD 2 License)
-- [Chess Merida Unicode by Michaël Peeters](https://github.com/xeyownt/chess_merida_unicode) -  mapping  of  the  Unicode  chess  characters  to the  chess  font  Merida
-  (Unlicense License) - inspiring svg method
+- [tcl-duktape by D. Bohdan](https://github.com/dbohdan/tcl-duktape)  - Using Javascript with Tcl (MIT License)
+- [chess.js by Jeff Hlywa](https://github.com/jhlywa/chess.js) -  TypeScript/Javascript chess library  (BSD 2 License)
+- [Chess Merida Unicode by Michaël Peeters](https://github.com/xeyownt/chess_merida_unicode) -  mapping  of  the
+  Unicode  chess  characters  to the  chess  font  Merida  (Unlicense License) - inspiring svg method
 - [Chess Merida Example using CSS by Manfred Rosenboom"](https://github.com/maroph/chess-merida-webfont) - inspiring hboard method
 - [Freeware Chess Merida Font created by Armando Hernandez Marroquin](https://www.enpassant.dk/chess/fonteng.htm#MERIDA)
 
