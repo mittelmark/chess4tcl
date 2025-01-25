@@ -1,7 +1,7 @@
 #!/usr/bin/env tclsh
 ##############################################################################
 #  Created       : 2025-01-15 19:21:27
-#  Last Modified : <250125.0802>
+#  Last Modified : <250125.0815>
 #
 #  Description	 : Tcl class using chess.js via Duktape
 #
@@ -901,14 +901,16 @@ proc ::chess4tcl::usage {app} {
     if {[regexp {tclmain$} $app]} {
         set app "tclmain -m chess4tcl"
     }
-    puts " Usage: $app ?-h ,--help, --format FORMAT? FENSTRING ?OUTFILE?"
+    puts " Usage: $app ?-h ,--help, -d, --demo, --format FORMAT? FENSTRING ?OUTFILE?"
 }
 proc ::chess4tcl::help {app argv} {
     puts " chess4tcl - Tcl application to display chessboard postions"
-    puts "            @ Detlef Groth, University of Potsdam, Germany\n"
+    puts "            @ 2017-2025 - Detlef Groth, University of Potsdam, Germany\n"
     usage $app
     puts "\n Options:\n"
-    puts "    --format   FORMAT - output format, either svg (default), ascii, css, html or rtf"
+    puts "    -h,--help       - display this help page"
+    puts "    -d,--demo       - run a little demo"
+    puts "    --format FORMAT - output format, either svg (default), ascii, css, html or rtf"
     puts "\n Arguments:\n"
     puts "   FENSTRING        - FEN string encoded chess position"
     puts "   OUTFILE          - file to write the position into"
@@ -920,6 +922,13 @@ proc ::chess4tcl::main {argv} {
         ::chess4tcl::help $argv0 $argv
     } elseif {[llength $argv] < 1} {
         ::chess4tcl::usage $argv0
+    } elseif {[lsearch -regex $argv {(-d|--demo)}] >-1} {
+        set code "set chess \[chess4tcl::Chess4Tcl new\]\n"
+        append code "\$chess new\n"
+        append code "\$chess move e4\n"
+        append code "puts \[\$chess ascii\]\n"
+        puts "## Evaluating code ...\n$code## --------------------------"
+        eval $code
     } else {
         set format svg
         set out stdout
@@ -965,116 +974,6 @@ proc ::chess4tcl::main {argv} {
 }
 if {[info exists argv0] && $argv0 eq [info script]} {
     ::chess4tcl::main $argv
-}
-
-if {false} {
-    set chess [::chess4tcl::Chess4Tcl new]
-    foreach move [$chess moves] { puts $move }
-    $chess move e4
-    $chess turn
-    $chess move e5
-    $chess move f4
-    puts [$chess ascii]
-    puts [$chess fen]
-    $chess reset
-    $chess header White Plunky Black Plinkie
-    $chess move e4
-    $chess move e5
-    $chess move f4
-    $chess move d5
-    
-    puts [$chess pgn]
-    puts [$chess ascii]
-    puts [$chess game_over]
-    $chess load "4k3/4P3/4K3/8/8/8/8/8 b - - 0 78"
-    puts [$chess ascii]
-    if {[$chess game_over]} {
-        puts "it's over!!"
-    }
-    $chess load "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3"
-    puts [$chess ascii]
-    puts [$chess game_over]
-    puts [$chess get a8]
-    puts [$chess get a5]
-    puts "puts in mate? "
-    puts [$chess in_check]
-    $chess load "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-    $chess move e4
-    $chess move e5
-    $chess move f4
-    puts [$chess history]
-    puts [$chess history true]
-    $chess load "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3"
-    puts [$chess game_over]
-    #puts [$chess in_mate]
-    $chess load "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3"
-    puts [$chess game_over]
-    #puts [$chess in_mate]
-    #puts [$chess in draw]
-    #puts [$chess in check]
-    set pgn {[Event "Casual Game"]
-[Site "Berlin GER"]
-[Date "1852.??.??"]
-[EventDate "?"]
-[Round "?"]
-[Result "1-0"]
-[White "Adolf Anderssen"]
-[Black "Jean Dufresne"]
-[ECO "C52"]
-[WhiteElo "?"]
-[BlackElo "?"]
-[PlyCount "47"]
-       
-1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.b4 Bxb4 5.c3 Ba5 6.d4 exd4 7.O-O
-d3 8.Qb3 Qf6 9.e5 Qg6 10.Re1 Nge7 11.Ba3 b5 12.Qxb5 Rb8 13.Qa4
-Bb6 14.Nbd2 Bb7 15.Ne4 Qf5 16.Bxd3 Qh5 17.Nf6+ gxf6 18.exf6
-Rg8 19.Rad1 Qxf3 20.Rxe7+ Nxe7 21.Qxd7+ Kxd7 22.Bf5+ Ke8
-23.Bd7+ Kf8 24.Bxe7# 1-0
-}
-     # did not work
-    $chess load_pgn $pgn
-    puts "loaded?"
-    puts [$chess ascii]
-    puts [$chess pgn]
-    puts "result?"
-    puts [$chess header]
-    $chess load "k7/8/n7/8/8/8/8/7K b - - 0 1"
-    $chess header White "Robert J. Fisher"
-    $chess header Black "Mikhail Tal"
-    puts [$chess insufficient_material]
-    $chess clear
-    puts [$chess put p b a5]
-    puts [$chess put k w h1]
-    puts [$chess fen]
-    puts [$chess put z w a1] ;# invalid
-    puts [$chess insufficient_material]
-    puts [$chess remove a5]
-    puts [$chess remove a1] ;# not possible
-    $chess clear
-    $chess load "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"
-    puts [$chess turn]
-    puts [$chess in_check]
-    $chess clear
-    puts "loading start position"
-    $chess load "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-    #$chess new
-    $chess move e4
-    $chess move e5
-    $chess move Na3 
-    $chess move Qh4
-    $chess move Ke2
-    puts "check? [$chess in_check]"
-    $chess move Qxe4
-    puts [$chess ascii]
-    puts "check? [$chess in_check]"
-    puts "mate? [$chess in_checkmate]"
-    puts [$chess board]
-    puts [$chess board true]
-    package require Tk
-    font create chessberlin -family "Chess Berlin" -size 20 
-    option add *font chessberlin
-    pack [text .t]
-    .t insert end [regsub -all " " [$chess board true] "   "]
 }
 
 #' ## Author

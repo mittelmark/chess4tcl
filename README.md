@@ -123,13 +123,15 @@ $ tclmain -m chess4tcl --version
 0.1.0
 $ tclmain -m chess4tcl --help
  chess4tcl - Tcl application to display chessboard postions
-            @ Detlef Groth, University of Potsdam, Germany
+            @ 2017-2025 - Detlef Groth, University of Potsdam, Germany
 
- Usage: tclmain -m chess4tcl ?-h ,--help, --format FORMAT? FENSTRING ?OUTFILE?
+ Usage: tclmain -m chess4tcl ?-h ,--help, -d, --demo, --format FORMAT? FENSTRING ?OUTFILE?
 
  Options:
 
-    --format   FORMAT - output format, either svg (default), ascii, css, html or rtf
+    -h,--help       - display this help page
+    -d,--demo       - run a little demo
+    --format FORMAT - output format, either svg (default), ascii, css, html or rtf
 
  Arguments:
 
