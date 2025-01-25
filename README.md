@@ -173,7 +173,9 @@ $ tclmain -m chess4tcl --format ascii "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RN
 $ tclmain -m chess4tcl --format html "rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR w KQkq - 1 3"
 <script type="module" src="https://unpkg.com/gchessboard"></script>
 <div style="max-width: 400px;margin-left:35px;">
-  <g-chess-board fen="rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR" style="--square-color-dark: hsl(27deg, 36%, 55%);--square-color-light: hsl(37deg, 66%, 83%);"></g-chess-board>
+  <g-chess-board fen="rnb1kbnr/pppp1ppp/8/4p3/5PPq/8/PPPPP2P/RNBQKBNR" 
+     style="--square-color-dark: hsl(27deg, 36%, 55%);--square-color-light: hsl(37deg, 66%, 83%);"></g-chess-board>
+</div>
 ```
 
 
