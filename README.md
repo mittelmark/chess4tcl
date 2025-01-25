@@ -6,7 +6,7 @@
 ![Commits](https://img.shields.io/github/commits-since/mittelmark/tchss4tcl/latest)
 
 [![Docu Package](https://img.shields.io/badge/Docu-Package-blue)](http://htmlpreview.github.io/?https://github.com/mittelmark/chess4tcl/blob/master/chess4tcl/chess4tcl.html)
-[![Wiki](https://img.shields.io/badge/Wiki-blue)](https://wiki.tcl-lang.org/page/Chess4Tcl)
+[![Wiki](https://img.shields.io/badge/Docu-Wiki-blue)](https://wiki.tcl-lang.org/page/Chess4Tcl)
 
 Tcl library  using the [chess.js](https://github.com/jhlywa/chess.js)
 library and the  [tcl-duktape](https://github.com/dbohdan/tcl-duktape) to display chess games
